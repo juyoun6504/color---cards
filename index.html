@@ -373,7 +373,7 @@ main{padding:24px 40px 80px}
 /* ═══════════════════════════════════════════════════
    ADMIN EDITOR — user editable manager
 ═══════════════════════════════════════════════════ */
-.admin-fab{
+.admin-fab{z-index:2147483647!important;
   position:fixed;right:18px;bottom:18px;z-index:9999;
   background:var(--gold);color:#0D0D0D;border:none;border-radius:999px;
   padding:10px 15px;font-family:var(--font-b);font-size:12px;font-weight:700;
@@ -410,7 +410,7 @@ main{padding:24px 40px 80px}
 .admin-divider{height:1px;background:var(--border);margin:14px 0}
 .admin-edit-card{position:absolute;right:9px;top:9px;z-index:2;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);color:var(--gold);font-size:10px;border-radius:999px;padding:5px 9px;cursor:pointer;backdrop-filter:blur(6px)}
 .sc-card,.pro-card{position:relative}
-@media(max-width:680px){.admin-row{grid-template-columns:1fr}.admin-drawer{padding:14px}.admin-fab{right:12px;bottom:12px}}
+@media(max-width:680px){.admin-row{grid-template-columns:1fr}.admin-drawer{padding:14px}.admin-fab{z-index:2147483647!important;right:12px;bottom:12px}}
 
 </style>
 </head>
@@ -2779,6 +2779,48 @@ function render(){ buildSimple(); buildPro(); }
 
 buildBrandChips();
 ensureAdminUI();
+
+// ADMIN CLICK FIX V2 — robust fallback for GitHub Pages/browser click issues
+window.NBAdminOpen = function(){
+  try{
+    ensureAdminUI();
+    var panel = document.getElementById('admin-panel');
+    if(panel){ panel.classList.add('open'); panel.style.display='flex'; }
+    openEditor(editingId || (PMU_COLORS[0] && PMU_COLORS[0].id));
+  }catch(e){ alert('관리창 오류: ' + (e && e.message ? e.message : e)); }
+};
+window.NBAdminClose = function(){
+  var panel = document.getElementById('admin-panel');
+  if(panel){ panel.classList.remove('open'); panel.style.display='none'; }
+};
+window.NBAdminEdit = function(id){
+  try{
+    window.NBAdminOpen();
+    openEditor(id);
+  }catch(e){ alert('수정창 오류: ' + (e && e.message ? e.message : e)); }
+};
+
+document.addEventListener('click', function(e){
+  var fab = e.target.closest && e.target.closest('.admin-fab');
+  if(fab){ e.preventDefault(); e.stopPropagation(); window.NBAdminOpen(); return; }
+  var cardBtn = e.target.closest && e.target.closest('.admin-edit-card');
+  if(cardBtn){
+    e.preventDefault(); e.stopPropagation();
+    var card = cardBtn.closest('.sc-card,.pro-card');
+    var id = '';
+    if(card && card.id){ id = card.id.replace(/^sc-|^pc-/,''); }
+    if(!id){
+      var name = card && card.querySelector('.sc-name,.pro-name');
+      var color = PMU_COLORS.find(function(c){ return name && c.name === name.textContent.trim(); });
+      id = color && color.id;
+    }
+    if(id) window.NBAdminEdit(id); else window.NBAdminOpen();
+  }
+}, true);
+
+// Make sure UI exists after load. Button still opens manually; panel will not auto-open.
+setTimeout(function(){ try{ ensureAdminUI(); }catch(e){} }, 300);
+
 render();
 </script>
 </body>
