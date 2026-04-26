@@ -368,6 +368,50 @@ main{padding:24px 40px 80px}
   padding-left:16px;
   line-height:1.3;
 }
+
+
+/* ═══════════════════════════════════════════════════
+   ADMIN EDITOR — user editable manager
+═══════════════════════════════════════════════════ */
+.admin-fab{
+  position:fixed;right:18px;bottom:18px;z-index:9999;
+  background:var(--gold);color:#0D0D0D;border:none;border-radius:999px;
+  padding:10px 15px;font-family:var(--font-b);font-size:12px;font-weight:700;
+  letter-spacing:.05em;box-shadow:0 10px 28px rgba(0,0,0,.38);cursor:pointer;
+}
+.admin-panel{
+  position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.72);
+  display:none;align-items:stretch;justify-content:flex-end;
+}
+.admin-panel.open{display:flex}
+.admin-drawer{
+  width:min(620px,100vw);height:100%;overflow:auto;background:#111;border-left:1px solid var(--border-light);
+  box-shadow:-20px 0 60px rgba(0,0,0,.45);padding:18px;
+}
+.admin-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:12px}
+.admin-title{font-family:var(--font-d);font-size:24px;font-weight:300;color:var(--text)}
+.admin-sub{font-size:11px;color:var(--text-muted);line-height:1.6;margin-top:4px}
+.admin-close{background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:6px;padding:7px 10px;cursor:pointer}
+.admin-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.admin-field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.admin-field label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.admin-field input,.admin-field select,.admin-field textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);
+  font-family:var(--font-b);font-size:12px;padding:8px 10px;outline:none;
+}
+.admin-field textarea{min-height:82px;resize:vertical;line-height:1.55;font-family:var(--font-b)}
+.admin-field textarea.mono{font-family:'Courier New',monospace;font-size:11px;min-height:150px}
+.admin-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 16px}
+.admin-btn{background:var(--surface2);border:1px solid var(--border-light);color:var(--text-dim);border-radius:999px;padding:7px 12px;font-size:11px;cursor:pointer;font-family:var(--font-b)}
+.admin-btn.primary{background:var(--gold);border-color:var(--gold);color:#0D0D0D;font-weight:700}
+.admin-btn.danger{border-color:rgba(196,100,80,.38);color:#C49080;background:rgba(196,100,80,.08)}
+.admin-btn.good{border-color:rgba(106,175,138,.38);color:var(--green);background:rgba(106,175,138,.08)}
+.admin-note{font-size:11px;color:var(--text-muted);line-height:1.7;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.admin-divider{height:1px;background:var(--border);margin:14px 0}
+.admin-edit-card{position:absolute;right:9px;top:9px;z-index:2;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);color:var(--gold);font-size:10px;border-radius:999px;padding:5px 9px;cursor:pointer;backdrop-filter:blur(6px)}
+.sc-card,.pro-card{position:relative}
+@media(max-width:680px){.admin-row{grid-template-columns:1fr}.admin-drawer{padding:14px}.admin-fab{right:12px;bottom:12px}}
+
 </style>
 </head>
 <body>
@@ -435,13 +479,33 @@ main{padding:24px 40px 80px}
 </main>
 
 <script>
+
+// ════════════════════════════════════════════════════════════
+//  ADMIN DATA LOADER — must be before PMU_COLORS
+// ════════════════════════════════════════════════════════════
+var ADMIN_DATA_KEY = 'nb_pmu_colors_admin_v2';
+var DEFAULT_COLORS_CACHE = null;
+var editingId = null;
+function deepClone(v){ return JSON.parse(JSON.stringify(v)); }
+function loadManagedColors(defaultColors){
+  DEFAULT_COLORS_CACHE = deepClone(defaultColors);
+  try{
+    const saved = localStorage.getItem(ADMIN_DATA_KEY);
+    if(saved){
+      const parsed = JSON.parse(saved);
+      if(Array.isArray(parsed)) return parsed;
+    }
+  }catch(e){ console.warn('Saved color data could not be loaded', e); }
+  return defaultColors;
+}
+
 // ════════════════════════════════════════════════════════════
 //  DATA
 //  ✅ 컬러 추가: 배열에 객체 추가 (active:true)
 //  ✅ 숨기기: active:false
 //  ✅ Pro 전용 필드: healedResult, skinMatch, mixPairing, caution, sessionNotes
 // ════════════════════════════════════════════════════════════
-const PMU_COLORS = [
+let PMU_COLORS = loadManagedColors([
 
   // ── LIP MAIN ──────────────────────────────────────────────
   {
@@ -2000,7 +2064,7 @@ Notes:
     caution:"밝은 피부 단독 전체 아이라인 시 너무 강할 수 있음. 희석 또는 레이어 조절.",
     sessionNotes:"눈썹 전체 단독 사용 비권장. 아이라이너·포인트 전용.",
   },
-];
+]);
 
 // ════════════════════════════════════════════════════════════
 //  STOCK — localStorage
@@ -2210,6 +2274,7 @@ function buildSimpleCard(c){
       <div class="sc-swatch" style="background:${c.hex}">
         <span class="sc-hex">${c.hex.toUpperCase()}</span>
       </div>
+      <button class="admin-edit-card" type="button" onclick="event.stopPropagation();openEditor('${c.id}')">수정</button>
       <div class="sc-head">
         <div class="sc-name">${safeText(c.name)}</div>
         <div class="sc-name-ko">${safeText(c.nameKo)}</div>
@@ -2312,6 +2377,7 @@ function buildProCard(c){
         <div class="hl-dot" style="background:${c.healedHex}"></div>
         <div class="hl-txt">${c.healedHex}</div>
       </div>
+      <button class="admin-edit-card" type="button" onclick="event.stopPropagation();openEditor('${c.id}')">수정</button>
       <div class="pro-info">
         <div class="pro-name">${safeText(c.name)}</div>
         <div class="pro-name-ko">${safeText(c.nameKo)}</div>
@@ -2354,6 +2420,245 @@ function buildProCard(c){
 
     </div>
   </div>`;
+}
+
+
+// ════════════════════════════════════════════════════════════
+//  ADMIN EDITOR — all card data editable in browser
+// ════════════════════════════════════════════════════════════
+function saveManagedColors(){
+  try{ localStorage.setItem(ADMIN_DATA_KEY, JSON.stringify(PMU_COLORS)); }
+  catch(e){ alert('저장 실패: 브라우저 저장공간을 확인해줘.'); }
+}
+function findColor(id){ return PMU_COLORS.find(c=>c.id===id) || PMU_COLORS[0]; }
+function uniqueId(base){
+  let id = String(base||'new-color').toLowerCase().trim()
+    .replace(/[^a-z0-9가-힣]+/g,'-').replace(/^-+|-+$/g,'') || 'new-color';
+  let out=id, n=2;
+  while(PMU_COLORS.some(c=>c.id===out)) out = id+'-'+(n++);
+  return out;
+}
+function linesToList(str){ return String(str||'').split('\\n').map(s=>s.trim()).filter(Boolean); }
+function listToLines(arr){ return (arr||[]).join('\\n'); }
+function ciToLines(arr){ return (arr||[]).map(x=>[x.name||'',x.ci||''].join(' | ')).join('\\n'); }
+function linesToCi(str){
+  return linesToList(str).map(line=>{
+    const parts=line.split('|').map(s=>s.trim());
+    return {name:parts[0]||'', ci:parts[1]||''};
+  });
+}
+function mixToLines(arr){ return (arr||[]).map(x=>[x.colors||'',x.ratio||'',x.effect||''].join(' | ')).join('\\n'); }
+function linesToMix(str){
+  return linesToList(str).map(line=>{
+    const parts=line.split('|').map(s=>s.trim());
+    return {colors:parts[0]||'', ratio:parts[1]||'', effect:parts[2]||''};
+  });
+}
+function ensureAdminUI(){
+  if(document.getElementById('admin-panel')) return;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <button class="admin-fab" type="button" onclick="openAdmin()">관리 / 수정</button>
+    <div class="admin-panel" id="admin-panel">
+      <aside class="admin-drawer">
+        <div class="admin-top">
+          <div>
+            <div class="admin-title">Color Chart Manager</div>
+            <div class="admin-sub">사진, 컬러명, 브랜드, 톤, CI, 설명, 보유상태까지 여기서 수정 가능. 저장은 이 브라우저에 남고, Export로 백업 가능.</div>
+          </div>
+          <button class="admin-close" onclick="closeAdmin()">닫기</button>
+        </div>
+        <div class="admin-note">
+          사진은 <b>imageUrl</b>에 경로를 넣으면 됨. 예: <code>images/PermaBlend-lips Color 사진/1. Date Night.png</code><br>
+          저장 후 바로 화면에 반영됨. GitHub 파일 자체를 바꾸는 기능은 아니므로, 최종 데이터는 <b>Export JSON</b>으로 백업해둬.
+        </div>
+        <div class="admin-field">
+          <label>수정할 컬러 선택</label>
+          <select id="admin-select" onchange="openEditor(this.value)"></select>
+        </div>
+        <div class="admin-actions">
+          <button class="admin-btn good" onclick="addColor()">+ 새 컬러 추가</button>
+          <button class="admin-btn" onclick="duplicateColor()">현재 컬러 복사</button>
+          <button class="admin-btn danger" onclick="deleteColor()">현재 컬러 삭제</button>
+        </div>
+        <div id="admin-form"></div>
+        <div class="admin-divider"></div>
+        <div class="admin-actions">
+          <button class="admin-btn primary" onclick="saveEditor()">저장하고 반영</button>
+          <button class="admin-btn" onclick="exportColors()">Export JSON</button>
+          <label class="admin-btn" style="display:inline-flex;align-items:center;gap:6px">Import JSON<input type="file" accept="application/json" onchange="importColors(this)" style="display:none"></label>
+          <button class="admin-btn danger" onclick="resetAllColors()">전체 초기화</button>
+        </div>
+      </aside>
+    </div>`;
+  document.body.appendChild(wrap);
+  refreshAdminSelect();
+}
+function openAdmin(){ ensureAdminUI(); document.getElementById('admin-panel').classList.add('open'); openEditor(editingId || (PMU_COLORS[0]&&PMU_COLORS[0].id)); }
+function closeAdmin(){ const p=document.getElementById('admin-panel'); if(p) p.classList.remove('open'); }
+function refreshAdminSelect(){
+  const sel=document.getElementById('admin-select'); if(!sel) return;
+  sel.innerHTML = PMU_COLORS.map(c=>`<option value="${safeAttr(c.id)}">${safeText(c.name||c.id)} — ${safeText(c.brand||'')}</option>`).join('');
+  if(editingId) sel.value=editingId;
+}
+function safeAttr(str){ return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function input(id,label,value,type='text'){
+  return `<div class="admin-field"><label>${label}</label><input id="ae-${id}" type="${type}" value="${safeAttr(value||'')}"></div>`;
+}
+function textarea(id,label,value,mono=false){
+  return `<div class="admin-field"><label>${label}</label><textarea id="ae-${id}" class="${mono?'mono':''}">${escapeHTML(value||'')}</textarea></div>`;
+}
+function selectField(id,label,value,options){
+  return `<div class="admin-field"><label>${label}</label><select id="ae-${id}">${options.map(o=>`<option value="${safeAttr(o)}" ${String(value)===String(o)?'selected':''}>${safeText(o)}</option>`).join('')}</select></div>`;
+}
+function openEditor(id){
+  ensureAdminUI();
+  const c = findColor(id); if(!c) return;
+  editingId = c.id;
+  const sel=document.getElementById('admin-select'); if(sel) sel.value=c.id;
+  const form=document.getElementById('admin-form');
+  form.innerHTML = `
+    <div class="admin-row">
+      ${selectField('active','표시 여부',String(c.active!==false),['true','false'])}
+      ${input('id','ID / 내부 이름',c.id)}
+    </div>
+    <div class="admin-row">
+      ${input('name','영문 컬러명',c.name)}
+      ${input('nameKo','한글 컬러명',c.nameKo)}
+    </div>
+    ${input('imageUrl','이미지 경로 / 사진 주소',c.imageUrl)}
+    <div class="admin-row">
+      ${input('brand','Brand',c.brand)}
+      ${input('collection','Collection',c.collection)}
+    </div>
+    <div class="admin-row">
+      ${selectField('category','Category',c.category,['Lip Color','Brow Color','Eyeliner Color','Hairline Color'])}
+      ${input('subtype','Subtype',c.subtype)}
+    </div>
+    <div class="admin-row">
+      ${input('type','Type / Main·Support 등',c.type)}
+      ${input('pigmentType','Pigment Type',c.pigmentType)}
+    </div>
+    <div class="admin-row">
+      ${selectField('temperature','Temperature',c.temperature,['warm','cool','neutral','—'])}
+      ${selectField('opacity','Opacity',c.opacity,['L','M','H','—'])}
+    </div>
+    <div class="admin-row">
+      ${input('family','Color Family',c.family)}
+      ${input('tone','Tone',c.tone)}
+    </div>
+    <div class="admin-row">
+      ${input('hex','Masstone Color HEX',c.hex,'color')}
+      ${input('healedHex','Healed Color HEX',c.healedHex,'color')}
+    </div>
+    <div class="admin-row">
+      ${input('masstone','Masstone HEX',c.masstone,'color')}
+      ${input('midtone','Midtone HEX',c.midtone,'color')}
+    </div>
+    <div class="admin-row">
+      ${input('basetone','Basetone HEX',c.basetone,'color')}
+      ${input('mastoneName','Masstone Name',c.mastoneName)}
+    </div>
+    <div class="admin-row">
+      ${input('midtoneName','Midtone Name',c.midtoneName)}
+      ${input('bastoneName','Basetone Name',c.bastoneName)}
+    </div>
+    ${textarea('bestUse','Best Use — 한 줄에 하나씩',listToLines(c.bestUse))}
+    ${textarea('ciIngredients','CI Ingredients — name | CI 형식',ciToLines(c.ciIngredients))}
+    ${textarea('healedResult','Healed Result / 탈각 후 발색',c.healedResult)}
+    ${textarea('caution','Caution / 주의사항',c.caution)}
+    ${textarea('sessionNotes','Session Notes / 시술자 메모',c.sessionNotes)}
+    ${textarea('mixPairing','Mix Pairing — colors | ratio | effect 형식',mixToLines(c.mixPairing))}
+    <div class="admin-row">
+      ${input('skinFair','Skin Fair 별점',c.skinMatch&&c.skinMatch.fair)}
+      ${input('skinMedium','Skin Medium 별점',c.skinMatch&&c.skinMatch.medium)}
+    </div>
+    <div class="admin-row">
+      ${input('skinOlive','Skin Olive 별점',c.skinMatch&&c.skinMatch.olive)}
+      ${input('skinDark','Skin Dark 별점',c.skinMatch&&c.skinMatch.dark)}
+    </div>
+    ${textarea('proData','Pro Data / 원문 전체 설명',c.proData)}
+    ${textarea('json','고급: 전체 데이터 JSON 직접 수정',JSON.stringify(c,null,2),true)}
+  `;
+}
+function v(id){ const el=document.getElementById('ae-'+id); return el ? el.value : ''; }
+function saveEditor(){
+  const old = findColor(editingId); if(!old) return;
+  let next;
+  const jsonText = v('json').trim();
+  try{ next = jsonText ? JSON.parse(jsonText) : deepClone(old); }
+  catch(e){ alert('전체 데이터 JSON 형식이 틀렸어. 쉼표/따옴표 확인해줘.'); return; }
+  const oldId = old.id;
+  next.active = v('active') === 'true';
+  next.id = v('id').trim() || oldId;
+  next.name = v('name'); next.nameKo = v('nameKo'); next.imageUrl = v('imageUrl');
+  next.brand = v('brand'); next.collection = v('collection'); next.category = v('category'); next.subtype = v('subtype');
+  next.type = v('type'); next.pigmentType = v('pigmentType'); next.temperature = v('temperature'); next.opacity = v('opacity');
+  next.family = v('family'); next.tone = v('tone');
+  next.hex = v('hex'); next.healedHex = v('healedHex'); next.masstone = v('masstone'); next.midtone = v('midtone'); next.basetone = v('basetone');
+  next.mastoneName = v('mastoneName'); next.midtoneName = v('midtoneName'); next.bastoneName = v('bastoneName');
+  next.bestUse = linesToList(v('bestUse'));
+  next.ciIngredients = linesToCi(v('ciIngredients'));
+  next.healedResult = v('healedResult'); next.caution = v('caution'); next.sessionNotes = v('sessionNotes');
+  next.mixPairing = linesToMix(v('mixPairing'));
+  next.skinMatch = {fair:v('skinFair'), medium:v('skinMedium'), olive:v('skinOlive'), dark:v('skinDark')};
+  next.proData = v('proData');
+  if(next.id !== oldId && PMU_COLORS.some(c=>c.id===next.id)){ alert('이미 같은 ID가 있어. ID를 다르게 써줘.'); return; }
+  const idx = PMU_COLORS.findIndex(c=>c.id===oldId);
+  PMU_COLORS[idx] = next;
+  if(stockData[oldId] && next.id !== oldId){ stockData[next.id] = stockData[oldId]; delete stockData[oldId]; saveStock(stockData); }
+  editingId = next.id;
+  saveManagedColors();
+  refreshAdminSelect();
+  render();
+  openEditor(next.id);
+}
+function addColor(){
+  const id = uniqueId('new-color');
+  const c = {active:true,id,imageUrl:'',name:'New Color',nameKo:'새 컬러',category:'Lip Color',subtype:'Main',type:'Main',brand:'',collection:'',pigmentType:'—',temperature:'neutral',opacity:'M',family:'',tone:'',hex:'#C47080',healedHex:'#D88898',masstone:'#A05060',midtone:'#C47080',basetone:'#D88898',mastoneName:'',midtoneName:'',bastoneName:'',ciIngredients:[],bestUse:[],healedResult:'',skinMatch:{fair:'',medium:'',olive:'',dark:''},mixPairing:[],caution:'',sessionNotes:'',proData:''};
+  PMU_COLORS.unshift(c); editingId=id; saveManagedColors(); refreshAdminSelect(); render(); openEditor(id);
+}
+function duplicateColor(){
+  const c = findColor(editingId); if(!c) return;
+  const n = deepClone(c); n.id = uniqueId(c.id+'-copy'); n.name = (n.name||'Color')+' Copy';
+  PMU_COLORS.unshift(n); editingId=n.id; saveManagedColors(); refreshAdminSelect(); render(); openEditor(n.id);
+}
+function deleteColor(){
+  const c = findColor(editingId); if(!c) return;
+  if(!confirm('이 컬러를 삭제할까? 삭제 후에도 전체 초기화로 원본 복구는 가능해.')) return;
+  PMU_COLORS = PMU_COLORS.filter(x=>x.id!==c.id);
+  delete stockData[c.id]; saveStock(stockData); saveManagedColors();
+  editingId = PMU_COLORS[0] && PMU_COLORS[0].id;
+  refreshAdminSelect(); render(); if(editingId) openEditor(editingId);
+}
+function exportColors(){
+  const blob = new Blob([JSON.stringify(PMU_COLORS,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'natural-brows-color-data.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importColors(input){
+  const file = input.files && input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      if(!Array.isArray(data)) throw new Error('JSON은 배열이어야 함');
+      PMU_COLORS = data; editingId = PMU_COLORS[0] && PMU_COLORS[0].id;
+      saveManagedColors(); refreshAdminSelect(); render(); if(editingId) openEditor(editingId);
+    }catch(e){ alert('Import 실패: JSON 파일 형식을 확인해줘.'); }
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+function resetAllColors(){
+  if(!confirm('브라우저에 저장된 모든 수정사항을 지우고 원본 데이터로 돌아갈까?')) return;
+  localStorage.removeItem(ADMIN_DATA_KEY);
+  PMU_COLORS = deepClone(DEFAULT_COLORS_CACHE || PMU_COLORS);
+  editingId = PMU_COLORS[0] && PMU_COLORS[0].id;
+  refreshAdminSelect(); render(); if(editingId) openEditor(editingId);
 }
 
 function escapeHTML(str){
@@ -2473,6 +2778,7 @@ function buildBrandChips(){
 function render(){ buildSimple(); buildPro(); }
 
 buildBrandChips();
+ensureAdminUI();
 render();
 </script>
 </body>
