@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Natural Brows — PMU Color Chart</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0D0D;--surface:#161616;--surface2:#1C1C1C;--surface3:#222;
+  --border:#2A2A2A;--border-light:#383838;
+  --text:#E8E4DF;--text-dim:#9A9490;--text-muted:#555;
+  --gold:#C9A96E;--gold-dim:rgba(201,169,110,.15);
+  --cool:#7BAEC4;--warm:#C4936A;
+  --green:#6AAF8A;--green-dim:rgba(106,175,138,.12);
+  --lip:#C47080;--eyeliner:#6A8EC4;--brow:#A08060;--hairline:#8090A0;
+  --font-d:'Cormorant Garamond',serif;--font-b:'DM Sans',sans-serif;
+  --r:10px;--rs:5px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:13px;font-weight:300;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* ─── Header ──────────────────────────────────────── */
+header{padding:40px 40px 22px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.brand-mark{font-family:var(--font-d);font-size:10px;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.brand-title{font-family:var(--font-d);font-size:32px;font-weight:300;letter-spacing:.02em;line-height:1}
+.brand-title em{font-style:italic;color:var(--text-dim)}
+.header-meta{font-size:10px;color:var(--text-muted);letter-spacing:.08em;text-align:right;line-height:1.8}
+
+/* ─── Category Bar ────────────────────────────────── */
+.cat-bar{display:flex;align-items:center;gap:7px;padding:14px 40px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.bar-label{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-right:4px;white-space:nowrap}
+.cat-btn{background:none;border:1px solid var(--border);cursor:pointer;font-family:var(--font-b);font-size:10.5px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);padding:5px 13px;border-radius:20px;transition:all .2s;display:flex;align-items:center;gap:5px}
+.cat-btn:hover{color:var(--text-dim);border-color:var(--border-light)}
+.cat-btn.active{color:#0D0D0D;border-color:transparent;font-weight:500}
+.cat-btn[data-cat="all"].active{background:#777}
+.cat-btn[data-cat="Lip Color"].active{background:var(--lip)}
+.cat-btn[data-cat="Brow Color"].active{background:var(--brow)}
+.cat-btn[data-cat="Eyeliner Color"].active{background:var(--eyeliner)}
+.cat-btn[data-cat="Hairline Color"].active{background:var(--hairline)}
+.cat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-lip{background:var(--lip)}.dot-brow{background:var(--brow)}
+.dot-eyeliner{background:var(--eyeliner)}.dot-hairline{background:var(--hairline)}
+
+/* ─── Filter Row ──────────────────────────────────── */
+.filter-row{display:flex;align-items:center;gap:8px;padding:12px 40px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:170px;max-width:280px}
+.search-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:7px 11px 7px 30px;font-family:var(--font-b);font-size:12px;color:var(--text);outline:none;transition:border-color .2s}
+.search-input::placeholder{color:var(--text-muted)}
+.search-input:focus{border-color:var(--border-light)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-muted);pointer-events:none}
+.search-clear{position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;display:none;line-height:1}
+.filter-chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{background:none;border:1px solid var(--border);cursor:pointer;font-family:var(--font-b);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);padding:3px 11px;border-radius:20px;transition:all .2s}
+.chip:hover{color:var(--text-dim);border-color:var(--border-light)}
+.chip.active{background:var(--surface2);border-color:var(--border-light);color:var(--text)}
+.chip[data-filter="stock"][data-val="in"].active  {background:rgba(106,175,138,.15);border-color:rgba(106,175,138,.4);color:var(--green)}
+.chip[data-filter="stock"][data-val="out"].active {background:rgba(160,140,130,.1);border-color:var(--border-light);color:var(--text-dim)}
+.chip[data-filter="stock"][data-val="wish"].active{background:rgba(201,169,110,.15);border-color:rgba(201,169,110,.35);color:var(--gold)}
+.filter-sep{width:1px;height:18px;background:var(--border);flex-shrink:0}
+
+/* ─── Tab Nav ─────────────────────────────────────── */
+.tab-nav{display:flex;gap:2px;padding:16px 40px 0}
+.tab-btn{background:none;border:none;cursor:pointer;font-family:var(--font-b);font-size:10.5px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);padding:8px 20px;border-radius:var(--rs) var(--rs) 0 0;border:1px solid transparent;border-bottom:none;transition:all .2s;position:relative;top:1px}
+.tab-btn:hover{color:var(--text-dim)}
+.tab-btn.active{color:var(--gold);border-color:var(--border);background:var(--surface)}
+.tab-line{border-top:1px solid var(--border);margin:0 40px}
+
+/* ─── Main ────────────────────────────────────────── */
+main{padding:24px 40px 80px}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.result-info{font-size:10.5px;color:var(--text-muted);margin-bottom:18px;letter-spacing:.04em}
+.result-info span{color:var(--gold)}
+
+/* ─── Section groups ──────────────────────────────── */
+.sg{margin-bottom:36px}
+.sg-title{font-family:var(--font-d);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.sg-title::before{content:'';width:14px;height:1px;background:var(--border-light)}
+.sg-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.sub-label{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin:18px 0 10px;padding-left:1px;opacity:.7}
+
+/* ═══════════════════════════════════════════════════
+   SIMPLE CHART — card grid
+═══════════════════════════════════════════════════ */
+.simple-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:6px}
+
+.sc-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  overflow:hidden;
+  transition:border-color .2s;
+  position:relative;
+}
+.sc-card:hover{border-color:var(--border-light)}
+
+/* stock row accent */
+.sc-card.sc-in  {border-left:3px solid var(--green)}
+.sc-card.sc-wish{border-left:3px solid var(--gold)}
+
+/* ── Card top banner ─── */
+.sc-banner{display:flex;align-items:stretch;min-height:72px}
+
+.sc-swatch{
+  width:72px;flex-shrink:0;
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding:8px 6px;
+  gap:4px;
+}
+.sc-swatch::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.14),transparent 60%);pointer-events:none}
+.sc-hex{font-family:monospace;font-size:8px;color:rgba(255,255,255,.45);letter-spacing:.02em;position:relative;z-index:1;text-align:center}
+
+.sc-head{flex:1;padding:11px 13px;display:flex;flex-direction:column;justify-content:center;gap:5px}
+.sc-name{font-family:var(--font-d);font-size:19px;font-weight:300;line-height:1;letter-spacing:.01em}
+.sc-name-ko{font-size:10.5px;color:var(--text-muted);margin-top:1px}
+.sc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+
+/* ── Card body ─── */
+.sc-body{
+  border-top:1px solid var(--border);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+}
+
+.sc-col{
+  padding:11px 13px;
+  display:flex;flex-direction:column;gap:8px;
+  border-right:1px solid var(--border);
+}
+.sc-col:last-child{border-right:none}
+.sc-col-full{
+  padding:11px 13px;
+  grid-column:1/-1;
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;gap:6px;
+}
+
+/* field label + value */
+.field{display:flex;flex-direction:column;gap:2px}
+.field-lbl{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
+.field-val{font-size:11.5px;color:var(--text-dim);line-height:1.45}
+.field-val.mono{font-family:'Courier New',monospace;font-size:10px;color:var(--text-muted)}
+
+/* tone strip (masstone/midtone/basetone) */
+.tone-strip{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.tone-swatch{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  min-width:44px;
+}
+.tone-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.08);
+  position:relative;
+}
+.tone-circle::after{content:'';position:absolute;inset:2px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.15),transparent)}
+.tone-lbl{font-size:8px;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase}
+.tone-name{font-size:9.5px;color:var(--text-dim);text-align:center;line-height:1.3}
+.tone-arrow{color:var(--border-light);font-size:14px;margin:0 1px;align-self:center;margin-top:-12px}
+
+/* CI list */
+.ci-stack{display:flex;flex-direction:column;gap:3px}
+.ci-item{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--surface2);border-radius:3px;padding:3px 8px}
+.ci-name{font-size:10px;color:var(--text-dim)}
+.ci-num{font-family:'Courier New',monospace;font-size:9.5px;color:var(--text-muted)}
+
+/* stock control */
+.stock-row{display:flex;align-items:center;gap:7px}
+.stock-check{appearance:none;-webkit-appearance:none;width:15px;height:15px;border:1px solid var(--border-light);border-radius:3px;background:var(--surface2);cursor:pointer;position:relative;flex-shrink:0;transition:all .18s}
+.stock-check:checked{background:var(--green);border-color:var(--green)}
+.stock-check:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;color:#0D0D0D;font-weight:700}
+.stock-check:hover:not(:checked){border-color:#555}
+.stock-star{background:none;border:none;cursor:pointer;font-size:12px;line-height:1;color:var(--border-light);transition:all .18s;padding:1px;flex-shrink:0}
+.stock-star.wished{color:var(--gold)}
+.stock-star:hover{color:var(--gold);transform:scale(1.15)}
+.stock-badge{font-size:9px;padding:2px 8px;border-radius:20px;letter-spacing:.05em;white-space:nowrap}
+.badge-in  {background:rgba(106,175,138,.15);color:var(--green);border:1px solid rgba(106,175,138,.3)}
+.badge-out {background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+.badge-wish{background:rgba(201,169,110,.12);color:var(--gold);border:1px solid rgba(201,169,110,.25)}
+
+/* tags */
+.tag{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:400;letter-spacing:.05em;white-space:nowrap;display:inline-block}
+.tag-main  {background:rgba(201,169,110,.12);color:var(--gold);border:1px solid rgba(201,169,110,.2)}
+.tag-mixer {background:rgba(140,140,160,.1);color:#9898B0;border:1px solid rgba(140,140,160,.2)}
+.tag-corr  {background:rgba(196,100,80,.1);color:#C47060;border:1px solid rgba(196,100,80,.2)}
+.tag-neut  {background:rgba(123,174,196,.1);color:var(--cool);border:1px solid rgba(123,174,196,.2)}
+.tag-warm-t{background:rgba(196,147,106,.1);color:var(--warm);border:1px solid rgba(196,147,106,.2)}
+.tag-cool-t{background:rgba(123,174,196,.1);color:var(--cool);border:1px solid rgba(123,174,196,.2)}
+.tag-neut-t{background:rgba(160,150,140,.1);color:#A09080;border:1px solid rgba(160,150,140,.18)}
+.tag-blend {background:rgba(160,160,180,.08);color:#9090A8;border:1px solid rgba(160,160,180,.18)}
+.tag-org   {background:rgba(196,147,106,.08);color:#B09070;border:1px solid rgba(196,147,106,.18)}
+.tag-op-L  {background:rgba(180,180,180,.06);color:#808080;border:1px solid rgba(180,180,180,.15)}
+.tag-op-M  {background:rgba(180,180,180,.09);color:#909090;border:1px solid rgba(180,180,180,.2)}
+.tag-op-H  {background:rgba(220,200,180,.1);color:#A8A090;border:1px solid rgba(220,200,180,.2)}
+
+/* best-use pills */
+.pill-row{display:flex;flex-wrap:wrap;gap:4px}
+.pill{font-size:9.5px;padding:3px 10px;border-radius:20px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,169,110,.2)}
+
+/* ═══════════════════════════════════════════════════
+   PRO DETAIL — enhanced cards
+═══════════════════════════════════════════════════ */
+.pro-grid{display:grid;gap:16px}
+
+.pro-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .2s}
+.pro-card:hover{border-color:var(--border-light)}
+.pro-card.sc-in  {border-left:3px solid var(--green)}
+.pro-card.sc-wish{border-left:3px solid var(--gold)}
+
+.pro-banner{display:flex;align-items:stretch;min-height:90px;position:relative;overflow:hidden}
+.pro-clr{width:110px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px;position:relative}
+.pro-clr::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 28%,rgba(255,255,255,.13),transparent 60%);pointer-events:none}
+.pro-hex{font-family:monospace;font-size:8.5px;color:rgba(255,255,255,.45);position:relative;z-index:1}
+.pro-hl{width:56px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px 5px;border-left:1px solid rgba(255,255,255,.05);position:relative}
+.pro-hl::before{content:'HEALED';position:absolute;top:6px;font-size:6.5px;letter-spacing:.15em;color:rgba(255,255,255,.2)}
+.hl-dot{width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.1);margin-top:12px}
+.hl-txt{font-size:8.5px;color:rgba(255,255,255,.28);text-align:center;line-height:1.3}
+.pro-info{flex:1;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.pro-name{font-family:var(--font-d);font-size:22px;font-weight:300;line-height:1.05}
+.pro-name-ko{font-size:10px;color:var(--text-muted)}
+.pro-tags{display:flex;flex-wrap:wrap;gap:4px}
+.pro-toggle{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text-muted);cursor:pointer;padding:6px;border-radius:50%;transition:all .2s;user-select:none;line-height:1}
+.pro-toggle:hover{color:var(--gold);background:rgba(201,169,110,.08)}
+
+.pro-body{border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.pro-body.collapsed{display:none}
+
+.pro-sec{padding:12px 14px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.pro-sec:last-child{border-right:none}
+.pro-sec-full{padding:12px 14px;grid-column:1/-1;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.pro-sec-2{grid-column:span 2;border-right:1px solid var(--border)}
+
+.sec-lbl{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.skin-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.skin-item{background:var(--surface2);border-radius:3px;padding:6px 8px;display:flex;flex-direction:column;gap:1px}
+.skin-type{font-size:8.5px;letter-spacing:.06em;color:var(--text-muted);text-transform:uppercase}
+.skin-stars{font-size:10px;color:var(--gold)}
+
+.mix-item{background:var(--surface2);border-radius:var(--rs);padding:7px 10px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.mix-ratio{font-family:var(--font-d);font-size:14px;color:var(--gold);min-width:28px}
+.mix-info{display:flex;flex-direction:column;gap:1px}
+.mix-colors{font-size:10.5px;color:var(--text-dim)}
+.mix-effect{font-size:10px;color:var(--text-muted)}
+
+.caution-box{background:rgba(196,100,80,.07);border:1px solid rgba(196,100,80,.18);border-radius:var(--rs);padding:8px 11px;font-size:11px;color:#C49080;line-height:1.6}
+.note-box{background:var(--surface2);border-radius:var(--rs);padding:8px 11px;font-size:11px;color:var(--text-dim);line-height:1.6}
+
+/* ─── Empty ───────────────────────────────────────── */
+.empty{text-align:center;padding:60px 20px;color:var(--text-muted);font-size:12px;line-height:2}
+.empty-icon{font-size:24px;opacity:.2;margin-bottom:10px}
+
+@media(max-width:680px){
+  .simple-grid{grid-template-columns:1fr}
+  .sc-body{grid-template-columns:1fr}
+  .sc-col{border-right:none;border-bottom:1px solid var(--border)}
+  .pro-body{grid-template-columns:1fr}
+  .pro-sec{border-right:none;border-bottom:1px solid var(--border)}
+  .pro-sec-2{grid-column:1}
+  header,.cat-bar,.filter-row,.tab-nav,main{padding-left:18px;padding-right:18px}
+  .tab-line{margin:0 18px}
+}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ─── Pro Accordion sections ─────────────────────────── */
+.acc-section{border-top:1px solid var(--border)}
+.acc-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;cursor:pointer;user-select:none;
+  transition:background .15s;
+}
+.acc-header:hover{background:rgba(255,255,255,.02)}
+.acc-title{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:7px}
+.acc-title::before{content:'';width:8px;height:1px;background:var(--gold-dim)}
+.acc-arrow{font-size:12px;color:var(--text-muted);transition:transform .2s;flex-shrink:0}
+.acc-arrow.open{transform:rotate(180deg)}
+.acc-body{display:none;padding:0 14px 14px}
+.acc-body.open{display:block}
+
+/* raw text block */
+.raw-text{
+  font-size:11.5px;color:var(--text-dim);line-height:1.85;
+  white-space:pre-wrap;word-break:break-word;
+  background:var(--surface2);border-radius:var(--rs);
+  padding:11px 13px;
+  font-family:var(--font-b);
+}
+
+/* pro-body new layout: single column of sections */
+.pro-body-v2{border-top:1px solid var(--border);display:flex;flex-direction:column}
+.pro-body-v2.collapsed{display:none}
+.pro-top-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border)}
+.pro-top-cell{padding:12px 14px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.pro-top-cell:last-child{border-right:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand-mark">Natural Brows Studio · Los Angeles</div>
+    <h1 class="brand-title">PMU Color <em>Chart</em></h1>
+  </div>
+  <div class="header-meta">Perma Blend Collection<br>Updated 2025</div>
+</header>
+
+<div class="cat-bar">
+  <span class="bar-label">Category</span>
+  <button class="cat-btn active" data-cat="all" onclick="setCat('all',this)">All</button>
+  <button class="cat-btn" data-cat="Lip Color"      onclick="setCat('Lip Color',this)"><span class="cat-dot dot-lip"></span>Lip</button>
+  <button class="cat-btn" data-cat="Brow Color"     onclick="setCat('Brow Color',this)"><span class="cat-dot dot-brow"></span>Brow</button>
+  <button class="cat-btn" data-cat="Eyeliner Color" onclick="setCat('Eyeliner Color',this)"><span class="cat-dot dot-eyeliner"></span>Eyeliner</button>
+  <button class="cat-btn" data-cat="Hairline Color" onclick="setCat('Hairline Color',this)"><span class="cat-dot dot-hairline"></span>Hairline</button>
+</div>
+
+<div class="filter-row">
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input class="search-input" id="search" type="text" placeholder="컬러명 검색 / Search..." oninput="onSearch(this)"/>
+    <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-chips" id="chips-brand"></div>
+  <div class="filter-sep"></div>
+  <div class="filter-chips">
+    <button class="chip" data-filter="temp" data-val="warm"    onclick="toggleChip(this)">Warm</button>
+    <button class="chip" data-filter="temp" data-val="cool"    onclick="toggleChip(this)">Cool</button>
+    <button class="chip" data-filter="temp" data-val="neutral" onclick="toggleChip(this)">Neutral</button>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-chips">
+    <button class="chip" data-filter="opacity" data-val="L" onclick="toggleChip(this)">Opacity L</button>
+    <button class="chip" data-filter="opacity" data-val="M" onclick="toggleChip(this)">Opacity M</button>
+    <button class="chip" data-filter="opacity" data-val="H" onclick="toggleChip(this)">Opacity H</button>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-chips">
+    <button class="chip" data-filter="subtype" data-val="Main"        onclick="toggleChip(this)">Main</button>
+    <button class="chip" data-filter="subtype" data-val="Support"     onclick="toggleChip(this)">Support</button>
+    <button class="chip" data-filter="subtype" data-val="Neutralizer" onclick="toggleChip(this)">Neutralizer</button>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-chips">
+    <button class="chip" data-filter="stock" data-val="in"   onclick="toggleChip(this)">☑ 보유중</button>
+    <button class="chip" data-filter="stock" data-val="out"  onclick="toggleChip(this)">☐ 없음</button>
+    <button class="chip" data-filter="stock" data-val="wish" onclick="toggleChip(this)">⭐ 구매예정</button>
+  </div>
+</div>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="setTab('simple',this)">Simple Chart</button>
+  <button class="tab-btn"        onclick="setTab('pro',this)">Pro Detail</button>
+</nav>
+<div class="tab-line"></div>
+
+<main>
+  <section class="tab-panel active" id="tab-simple"><div id="simple-content"></div></section>
+  <section class="tab-panel"        id="tab-pro"><div class="pro-grid" id="pro-content"></div></section>
+</main>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  DATA
+//  ✅ 컬러 추가: 배열에 객체 추가 (active:true)
+//  ✅ 숨기기: active:false
+//  ✅ Pro 전용 필드: healedResult, skinMatch, mixPairing, caution, sessionNotes
+// ════════════════════════════════════════════════════════════
+const PMU_COLORS = [
+
+  // ── LIP MAIN ──────────────────────────────────────────────
+  {
+    active:true, id:"date-night", name:"Date Night", nameKo:"데이트 나이트",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"cool", opacity:"M", opacityNote:"Medium-Low",
+    family:"Red", tone:"Deep Berry Red",
+    hex:"#8B2042", healedHex:"#A04060",
+    masstone:"#6B1030", midtone:"#8B2042", basetone:"#B05070",
+    mastoneName:"Dark Berry", midtoneName:"Berry Red", bastoneName:"Soft Berry",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 238",ci:"CI 173985"},{name:"Red 254",ci:"CI 56110"}],
+    bestUse:["Lip Blush","Bold Lip","Dark Tone Definition"],
+    // ── Pro only ──
+    healedResult:"힐링 후 쿨톤 딥 베리. 산화 최소. 그레이 쉬프트 없음.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★☆",olive:"★★★☆☆",dark:"★★☆☆☆"},
+    mixPairing:[{colors:"+ Cream De Pink",ratio:"3:1",effect:"밝은 베리 핑크"}],
+    caution:"밝은 피부에 단독 전체 시술 시 너무 진할 수 있음. 희석 권장.",
+    sessionNotes:"1차 레이어 얇게 — 베리톤 빠르게 발색됨. Masstone 기준 베이스 시술.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+Use: Lips
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 238 | CI 173995
+  - Red 254 | CI 56110
+Temperature: Cool
+Opacity: Low 쪽 Medium
+Color: A highly pigmented deep red
+Family: Red
+Masstone (병 안 컬러): 진한 딥 레드
+Midtone (힐링 후): 핑크 레드 / 쿨 로즈 레드
+Basetone: Cool 방향성 / 베리 레드 느낌
+Use Alone: 가능 | Blend: 가능 | Custom Shade: 가능
+
+【 Use 】
+- 창백한 입술에 혈색 추가
+- 쿨톤 고객 선호도 높음
+- 또렷한 립라인 표현 가능
+- 2차 세션 포인트 컬러 좋음
+- 진한 레드 원할 때 단독 가능
+- 풀립 가능 / 그라데이션 가능 / 중화 후 마무리 컬러 가능
+
+【 특징 】
+- 힐링 후 쿨 베리 핑크·레드 계열로 남는 편
+- 병색보다 한 톤 부드럽게 힐링됨
+- 오렌지기 거의 없음 ✅
+- 브라운기 적음 ✅
+- 형광 느낌 없음 ✅
+- 핑크처럼 보여도 베리톤 레드 계열
+- 핑크로 변색되는 타입 아님
+- 웜톤 단독 사용 시 차갑게 보일 수 있음
+- 믹싱 시 핑크 계열 강화 쉬움
+
+계열-톤: 쿨 베리 레드 계열 / 쿨톤
+불투명도: Medium (중간)
+병 안 색 (Masstone): 진한 쿨 레드
+탈각 후 색 (Midtone): 쿨 베리 레드 / 병색보다 한 톤 연한 / 딸기·라즈베리 계열 레드
+Basetone: 쿨톤 레드 (핑크처럼 보일 수 있지만, 핑크가 아니라 베리톤 레드)
+탈각 후 레드 그대로 남는 타입 / 핑크로 변색되는 컬러 아님
+
+풀립 가능 / 그라데이션 가능 / 중화 마무리용
+
+【 단독 사용 시 발색 】
+- 단독 풀립: 탈각후 쿨 베리 레드
+- 그라데이션: 안쪽 진한 베리 레드 / 바깥 연한 베리 레드
+
+【 믹싱 조합 】
+- Pillow Talk + Date Night (8:2 / 7:3) → 부드러운 로즈 레드
+- Raspberry + Date Night (6:4 / 7:3) → 밝은 핑크 레드
+- Shading Solution + Date Night (1:1) → 맑은 틴트 느낌
+- Sweet Melissa + Date Night → MLBB 베리 핑크 레드 (데이트 나이트의 레드가 부드러워짐 / 데일리 립, 자연 립 표현 가능)
+- Peach + Date Night → 코랄 레드 (레드가 탁해지지 않고 밝아짐 / 웜한 피부에도 사용 가능해짐)
+- Bare + Date Night → 누디한 로즈 레드 (레드 부담 줄이고 자연스럽게 연출 / 40~50대 고객 데일리 립용)
+- Neutralizer(중화) → Date Night → 다크 립 중화 후 레드 복원 (입술이 보라/회색/블랙기 있을 때 / 1차 중화 후 → 2차 데이트 나이트)
+
+【 같이 쓰면 안 좋은 조합 】
+- Orange Crush 과다 → 레드가 오렌지 레드로 변형됨
+- Yellow 계열 과다 → 레드가 살구·주황으로 변형됨
+- 브라운 계열 과다 → 레드가 탁해지고 벽돌색 됨
+
+【 사용 주의해야 할 입술 타입 】
+- 아주 짙은 보라·블랙 립 → 중화 먼저 필수
+- 멜라닌 많은 다크 립 → 단독 바로 사용 X
+- 혈색 거의 없는 창백 립 → 단독 쓰면 너무 쨍함
+
+【 가장 잘 어울리는 고객 】
+✅ 레드립 원하지만 쿨한 느낌 원할 때
+✅ 쿨톤 피부
+✅ 베리 레드 선호 고객
+✅ 웨딩 립, 포인트 립, 풀립 원하는 고객
+
+【 시술자 카드용 초간단 요약 】
+Date Night (데이트 나이트)
+• 계열: 쿨 레드
+• 탈각 후: 쿨 베리 레드
+• 단독: 풀립 베리 레드
+• 조합: Sweet Melissa → MLBB 베리핑크 / Peach → 코랄 레드 / Bare → 누디 로즈 레드
+• 다크 립: 중화 후 사용
+• 오렌지/옐로 과다 혼합 금지`,
+  },
+  {
+    active:true, id:"pillow-talk", name:"Pillow Talk", nameKo:"필로우 토크",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"cool", opacity:"M",
+    family:"Deep Pink / Rose Pink", tone:"Clear Rose Pink / Rosy Red Pink",
+    hex:"#C95F7A", healedHex:"#E79BB2",
+    masstone:"#C95F7A", midtone:"#E79BB2", basetone:"#F2D6DE",
+    mastoneName:"진한 로즈 핑크", midtoneName:"선명한 로즈 핑크", bastoneName:"Cool Rose Pink",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 170",ci:"CI 12475"}],
+    bestUse:["Lip Blush","로즈 핑크립","쿨톤 포인트"],
+    healedResult:"힐링 후 쿨 로즈 핑크 (#E79BB2). 로즈 방향 유지. 쿨톤 선명함 유지.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Date Night",ratio:"1:2",effect:"딥 로즈 핑크"}],
+    caution:"올리브·황톤 피부에 단독 사용 시 로즈톤이 부자연스러울 수 있음.",
+    sessionNotes:"선명한 쿨 로즈 발색. Masstone 기준 로즈 핑크립 연출. 누드 방향 아님.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 170 | CI 12475
+Temperature: Cool
+Opacity: Medium
+Color Family: Deep Pink / Rose Pink
+
+【 Use 】
+- 연하고 여리한 핑크립 표현
+- 밝은 베이스 컬러로 사용
+- 진한 컬러에 섞어 부드럽게 만들기
+- 2차 리터치 때 화사함 추가
+- 자연스러운 쿨핑크 립 연출
+
+【 특징 】
+- 화이트(TiO2) 포함으로 밝게 표현됨
+- 힐링 후 부드러운 핑크로 남는 편
+- 단독 사용 시 연하게 표현될 수 있음
+- 어두운 입술 단독 사용은 밀릴 수 있음
+- 레드/베리 계열과 믹싱 좋음
+- 과사용 시 탁하거나 분필감 느껴질 수 있음
+✅ 형광기 없음 / 오렌지기 없음 / 브라운기 없음
+
+계열-톤: 딥 핑크 / 쿨 핑크 베이스
+불투명도: Medium (중간) → 진하지만 불투명 막 느낌 아님 → 그라데이션, 레이어링 모두 가능
+병 안 색 (Masstone): 진한 딥 쿨 핑크 레드
+탈각 후 발색 (Midtone): 선명한 미디엄 딥 핑크 / 자두빛 + 핑크 중간 느낌 / Date Night보다 밝고 부드러움
+Basetone: 쿨 핑크 베이스 (레드처럼 보일 수 있으나 정확히는 "베리 핑크톤")
+✅ 탈각 후 핑크 유지력 좋음 / 레드로 변색되지 않는 핑크 타입
+
+풀립 가능 / 그라데이션 최적 / MLBB 베이스 컬러 / 다크 립 위 2차 정리용 핑크
+
+【 단독 사용 시 발색 】
+- 풀립: 선명한 딥 핑크 MLBB
+- 그라데이션: 안쪽 → 딥 핑크 / 바깥 → 소프트 핑크
+✅ 쨍하지 않고 고급스러운 핑크
+
+【 믹싱 조합 】
+- Date Night + Pillow Talk → 베리 레드 핑크 (레드가 쿨 핑크로 부드러워짐 / 웨딩 립, 데일리 레드 핑크)
+- Peach + Pillow Talk → 피치 MLBB 핑크 (핑크에 생기만 살짝 추가 / 웜톤 데일리 립 가능)
+- Bare + Pillow Talk → 누디 MLBB 핑크 (40~60대 고객 최강 조합 / 혈색만 자연스럽게 복원)
+- Neutralizer → Pillow Talk → 다크 립 중화 후 핑크 복원 (보라/회색 입술 → 핑크로 다시 살림 / 1차 중화 → 2차 필로우 토크)
+
+실전 참고:
+- Pillow Talk + Date Night (8:2 / 7:3) → 부드러운 로즈 레드
+- Raspberry + Date Night (6:4 / 7:3) → 밝은 핑크 레드
+- Shading Solution + Date Night (1:1) → 맑은 틴트 느낌
+
+【 같이 쓰면 안 좋은 조합 】
+- Yellow 계열 과다 → 핑크가 살구색으로 틀어짐
+- Orange Crush 과다 → 코랄 핑크로 변형
+- 브라운 계열 과다 → 핑크 탁해짐 + 말린 장미톤 변질
+
+【 사용 주의해야 할 입술 타입 】
+- 아주 짙은 보라/블랙 립 → 중화 후 사용 필수
+- 멜라닌 많은 아주 다크 립 → 단독 바로 사용 X
+
+【 가장 잘 어울리는 고객 】
+✅ 혈색 없는 창백 립 → 최고로 잘 받음 MLBB
+✅ 핑크 MLBB 원하는 고객
+✅ 쿨톤 피부
+✅ 자연스러운 생기립 원하는 고객
+✅ 데일리 립 / 웨딩 립
+✅ 20대~60대 전 연령 안전 컬러
+
+【 시술자 카드용 초간단 요약 】
+Pillow Talk (필로우 토크)
+• 계열: 쿨 핑크
+• 탈각 후: 선명한 딥 핑크 MLBB
+• 단독: 풀립 핑크 / 그라데이션 최강
+• 조합: Date Night → 베리 레드 핑크 / Peach → 피치 MLBB / Bare → 누디 핑크
+• 다크 립: 중화 후 사용
+• 옐로/오렌지/브라운 과다 혼합 금지`,
+  },
+  {
+    active:true, id:"raspberry", name:"Raspberry", nameKo:"라즈베리",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"neutral-cool", opacity:"M",
+    family:"Berry Pink / Raspberry Red", tone:"Raspberry Pink",
+    hex:"#B03060", healedHex:"#C05070",
+    masstone:"#8B1840", midtone:"#B03060", basetone:"#C86080",
+    mastoneName:"Deep Raspberry", midtoneName:"Raspberry", bastoneName:"Berry Pink",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 254",ci:"CI 56110"},{name:"Red 238",ci:"CI 173995"}],
+    bestUse:["Lip Blush","Vivid Lip","핑크 계열"],
+    healedResult:"힐링 후 쿨 라즈베리 핑크. 산화 후 약간 밝아짐.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★☆",olive:"★★★☆☆",dark:"★★☆☆☆"},
+    mixPairing:[{colors:"+ Bare",ratio:"1:1",effect:"뮤트 핑크 누드"}],
+    caution:"황톤 피부에 쿨핑크가 부자연스러울 수 있음. Neutralizer 소량 혼합 권장.",
+    sessionNotes:"발색력 중간. 레이어링으로 강도 조절 용이.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 254 | CI 56110
+  - Red 238 | CI 173995
+Temperature: Cool 쪽
+Opacity: Medium
+Family: Berry Pink / Raspberry Red
+
+Tone: Cool Berry / Raspberry Pink / Rose Berry / Vivid Pink Red
+
+【 Use 】
+- 생기 있는 쿨톤 립 표현
+- 핑크보다 깊고 레드보다 부드러운 컬러
+- 칙칙한 입술 혈색 보정
+- 베리립 / 로즈립 표현
+- 2차 리터치 포인트 컬러 좋음
+
+【 특징 】
+- 핑크와 레드의 중간 느낌
+- 힐링 후 로즈베리 계열로 남는 편
+- 오렌지기 거의 없음 ✅
+- 쿨톤 고객 만족도 높음
+- 단독 사용 가능
+- Date Night보다 부드럽고 여성스러움
+✅ 형광기 없음 / 오렌지기 없음 / 브라운기 없음
+✅ 블루기 과하지 않음 → 보라로 탁해질 위험 낮음
+
+계열-톤: 레드 핑크 / 베리 핑크 레드
+불투명도: Medium (중간) → 선명하지만 두껍게 막 올라오는 타입 아님 → 풀립 / 그라데이션 / 레이어링 모두 가능
+Temperature: 쿨 쪽에 가까운 뉴트럴 레드 핑크
+
+병 안 색 (Masstone): 선명한 레드 핑크 / 체리 레드 + 라즈베리 핑크 중간 느낌
+탈각 후 발색 (Midtone): 선명한 핑크 레드 / 레드감 남아 있는 베리 핑크 / 입술톤에 따라 핑크 쪽으로 더 이동 가능
+Basetone: 쿨 핑크 베이스 (레드처럼 보일 수 있으나 정확히는 "베리 핑크톤")
+
+✅ 핑크 유지력 좋음 / 브라운으로 변질 거의 없음 / 퍼플로 탁해질 확률 낮음 / 레드 → 핑크 쪽으로 자연 이동하는 타입
+
+【 단독 사용 시 발색 】
+- 풀립: 선명한 베리 핑크 레드
+- 그라데이션: 안쪽 → 핑크 레드 / 바깥 → 소프트 핑크
+✅ 쨍한 형광 핑크 ❌ / 탁한 말린 장미 ❌ / 고급스러운 베리 핑크 레드 ✅
+
+【 믹싱 조합 】
+- Date Night + Raspberry → 베리 레드 (레드가 핑크 쪽으로 부드러워짐 / 웨딩 레드 핑크 / 데일리 레드 핑크)
+- Peach + Raspberry → 피치 핑크 레드 (웜톤 고객 혈색 업)
+- Bare + Raspberry → 누디 베리 핑크 (40~60대 고객 데일리 MLBB)
+- Neutralizer → Raspberry → 다크 립 중화 후 핑크 레드 복원 (보라/회색 입술 → 베리 핑크로 복원 / 1차 중화 → 2차 라즈베리)
+
+【 같이 쓰면 안 좋은 조합 】
+- Yellow 계열 과다 → 핑크가 살구기 / 코랄기로 틀어짐
+- Orange Crush 과다 → 코랄 핑크로 변질
+- 브라운 계열 과다 → 베리감 죽고 말린 장미 톤으로 탁해짐
+
+【 사용 주의해야 할 입술 타입 】
+- 아주 짙은 보라/블랙 립 → 중화 후 사용 필수
+- 멜라닌 많은 아주 다크 립 → 단독 바로 사용 X
+- 혈색 없는 창백 립 → 핑크 레드 MLBB로 최고
+
+【 가장 잘 어울리는 고객 】
+✅ 핑크 레드 / 베리톤 원하는 고객
+✅ 쿨톤 피부
+✅ 핑크보다 진한 혈색 원하는 고객
+✅ 데일리 + 웨딩 겸용
+✅ 20대~50대 최적
+
+【 최종 판정 요약 】
+✅ 핑크 + 레드 중간 계열
+✅ 베리 핑크 레드 포지션
+✅ 쿨톤 쪽에 더 가까움
+✅ 풀립 / 그라데이션 전부 가능
+✅ Pillow Talk보다 레드가 더 많은 컬러
+
+【 시술자 카드용 초간단 요약 】
+Raspberry (라즈베리)
+• 계열: 레드 핑크 / 베리 핑크 레드
+• 탈각 후: 선명한 핑크 레드
+• 단독: 풀립 핑크 레드 / 그라데이션 가능
+• 조합: Date Night → 베리 레드 / Peach → 피치 핑크 레드 / Bare → 누디 베리 핑크
+• 다크 립: 중화 후 사용
+• 옐로/오렌지/브라운 과다 혼합 금지`,
+  },
+  {
+    active:true, id:"bazooka", name:"Bazooka", nameKo:"바주카",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"cool", opacity:"H",
+    family:"Hot Pink / Vivid Pink", tone:"Coral Pink",
+    hex:"#E8607A", healedHex:"#E88090",
+    masstone:"#C84060", midtone:"#E8607A", basetone:"#F08898",
+    mastoneName:"Deep Coral", midtoneName:"Coral Pink", bastoneName:"Light Coral",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 238",ci:"CI 173995"},{name:"Red 254",ci:"CI 56110"}],
+    bestUse:["Lip Blush","코랄 톤","봄 여름"],
+    healedResult:"힐링 후 밝은 코랄 핑크. 발색 선명하게 유지.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Neutralizer",ratio:"4:1",effect:"따뜻한 코랄 보정"}],
+    caution:"Opacity H — 단독 전체 시술 시 커버가 강함. 희석 또는 레이어 조절 필요.",
+    sessionNotes:"코랄 계열 중 범용성 높음. 황톤 피부엔 Peach Veil 소량 혼합 추천.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 238 | CI 173995
+  - Red 254 | CI 56110
+Temperature: Cool 쪽
+Opacity: High
+Family: Hot Pink / Vivid Pink
+
+Tone: Bright Pink / Cool Hot Pink / Bubblegum Pink / Vivid Rose Pink
+
+【 Use 】
+- 선명한 핑크립 표현
+- 화사하고 어려 보이는 립 연출
+- 창백한 입술 혈색 보강
+- 쿨톤 고객 포인트 컬러
+- 다른 컬러에 소량 믹싱해 핑크감 추가
+
+【 특징 】
+- 발색력이 강하고 존재감 있음
+- 힐링 후 선명한 핑크 계열로 남는 편
+- 레드보다 핑크 비중이 강함
+- 오렌지기 거의 없음
+- 단독 사용 시 화려하게 표현될 수 있음
+- 웜톤 고객 단독 사용 시 차갑게 보일 수 있음`,
+  },
+  {
+    active:true, id:"passion-red", name:"Passion Red", nameKo:"패션 레드",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"", pigmentType:"organic",
+    temperature:"warm", opacity:"L",
+    family:"Red", tone:"Bright Warm Red",
+    hex:"#C02030", healedHex:"#C84050",
+    masstone:"#8B1020", midtone:"#C02030", basetone:"#D84050",
+    mastoneName:"Deep Warm Red", midtoneName:"Warm Red", bastoneName:"Bright Red",
+    ciIngredients:[{name:"Red 254",ci:"CI 56110"}],
+    bestUse:["풀립","레드립","클래식"],
+    healedResult:"힐링 후 웜 레드. Organic이라 산화 시 약간 오렌지 쉬프트 가능.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Royal Red",ratio:"1:1",effect:"쿨-웜 밸런스 레드"}],
+    caution:"Organic 단일 안료 — 산화 시 오렌지 방향 주의. CI 77891(TiO₂) 없음.",
+    sessionNotes:"순수 레드 발색. Opacity L이지만 레이어링으로 강도 높임 가능.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Organic (유기)
+CI Colorants:
+  - Red 254 | CI 56110
+Temperature: Warm 쪽
+Opacity: Low
+Family: Red
+
+Tone: Bright Warm Red / True Red / Tomato Red / Vivid Classic Red
+
+【 Use 】
+- 선명한 레드립 표현
+- 혈색감 강한 생기 립 연출
+- 웜톤 고객 포인트 컬러
+- 코랄/오렌지 계열과 믹싱 좋음
+- 2차 리터치 때 채도 업용
+
+【 특징 】
+- 단일 유기 레드로 발색이 선명함
+- 힐링 후 맑고 또렷한 레드감 유지
+- 핑크기보다 레드감이 강함
+- 오렌지/토마토 느낌이 살짝 느껴질 수 있음
+- 단독 사용 시 존재감 강함
+- 쿨톤 고객 단독 사용 시 다소 따뜻하게 보일 수 있음`,
+  },
+  {
+    active:true, id:"red-apple", name:"Red Apple", nameKo:"레드 애플",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"LUXE Lip Pigments", pigmentType:"organic",
+    temperature:"warm", opacity:"L",
+    family:"Red", tone:"Fresh Warm Red",
+    hex:"#C82020", healedHex:"#D04040",
+    masstone:"#900010", midtone:"#C82020", basetone:"#E04040",
+    mastoneName:"Deep Red", midtoneName:"Bright Warm Red", bastoneName:"Vivid Red",
+    ciIngredients:[{name:"Red 254",ci:"CI 56110"}],
+    bestUse:["풀립","비비드 레드"],
+    healedResult:"힐링 후 웜 브라이트 레드. Passion Red보다 밝음.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Lady Bug",ratio:"1:1",effect:"쿨-웜 밸런스 레드"}],
+    caution:"LUXE 라인 — 유동성 다름. 사용 전 점도 확인.",
+    sessionNotes:"Passion Red와 비교 시 더 비비드. 동일 Organic 계열.",
+    proData:`Brand: Perma Blend LUXE Lip Pigments
+Pigment Type: Organic (유기)
+CI Colorants:
+  - Red 254 | CI 56110
+Temperature: Warm 쪽
+Opacity: Low
+Family: Red
+
+Tone: Fresh Warm Red / Apple Red / Bright Tomato Red / Clean Classic Red
+
+【 Use 】
+- 생기 있는 레드립 표현
+- 맑고 깨끗한 혈색 립 연출
+- 웜톤 고객 화사한 포인트 컬러
+- 코랄/오렌지 계열 믹싱 활용 좋음
+- 2차 리터치 시 채도 보강용
+
+【 특징 】
+- Passion Red와 유사한 유기 레드 계열
+- 맑고 선명한 레드 발색
+- 힐링 후 또렷한 레드감 유지
+- 탁함 없이 깨끗한 색감 표현
+- 단독 사용 시 밝고 경쾌한 느낌
+- 쿨톤 고객 단독 사용 시 따뜻하게 보일 수 있음
+✅ 형광기 없음 / 오렌지기 거의 없음 / 브라운기 없음
+✅ 핑크는 "메인 아님" → 레드에 아주 소량 섞인 정도
+
+계열-톤: 내추럴 레드 / 웜 레드 베이스
+불투명도: Medium (중간) → 쨍한 레드 아님 → 본래 입술색이 결과에 크게 영향 → 그라데이션, 레이어링 모두 가능
+
+병 안 색 (Masstone): 선명한 레드 / 체리 레드 + 핑크 레드 중간 느낌
+탈각 후 발색 (Midtone): 맑은 내추럴 레드 / 핏빛 레드 느낌 / 입술톤에 따라 레드 + 누디기 살짝 섞여 보일 수 있음
+Basetone: 웜 레드 베이스 (핑크처럼 보일 수 있으나 정확히는 "핑크기 살짝 섞인 레드")
+
+✅ 레드 유지력 좋음 / 핑크로 변색되지 않음 / 브라운으로 탁해지지 않음 / 자연 레드로 유지되는 타입
+
+【 단독 사용 시 발색 】
+- 풀립: 맑은 MLBB 레드
+- 그라데이션: 안쪽 → 맑은 레드 / 바깥 → 누디 레드
+✅ 패션레드처럼 쨍한 느낌 ❌ / 고급스럽고 자연스러운 레드 ✅
+
+【 믹싱 조합 】
+- Date Night + Red Apple → 클래식 레드 (레드가 더 또렷해짐 / 웨딩 레드 / 포인트 립)
+- Bare + Red Apple → 누디 레드 MLBB (데일리 최강 조합 / 30~50대 고객 안정 조합)
+- Peach + Red Apple → 피치 레드 (웜톤 고객 혈색 업)
+- Neutralizer → Red Apple → 다크 립 중화 후 레드 복원 (보라/회색 입술 → 자연 레드 / 1차 중화 → 2차 레드 애플)
+
+【 같이 쓰면 안 좋은 조합 】
+- Yellow 계열 과다 → 레드가 살구/코랄로 변질됨
+- Orange Crush 과다 → 코랄 레드로 틀어짐
+- 브라운 계열 과다 → 레드 탁해짐 + 브릭 레드화
+
+【 사용 주의해야 할 입술 타입 】
+- 아주 짙은 보라/블랙 립 → 중화 후 사용 필수
+- 멜라닌 많은 아주 다크 립 → 단독 바로 사용 X
+- 혈색 없는 창백 립 → 혈색 레드 MLBB로 최고
+
+【 가장 잘 어울리는 고객 】
+✅ 자연 레드 MLBB 원하는 고객
+✅ 웜톤 피부
+✅ 과하지 않은 데일리 레드 원하는 고객
+✅ 결혼식·행사 자연 레드립
+✅ 20대~60대 전 연령 안전 레드 컬러
+
+【 최종 판정 요약 】
+❌ 핑크립 아님
+✅ 레드립 확실히 맞음
+✅ Fashion Red랑 같은 라인 아님
+✅ 내추럴 레드 / MLBB 레드 포지션
+✅ 웜톤 레드
+
+【 시술자 카드용 초간단 요약 】
+Red Apple (레드 애플)
+• 계열: 웜 레드
+• 탈각 후: 맑은 내추럴 레드 MLBB
+• 단독: 데일리 레드 풀립 / 그라데이션 가능
+• 조합: Date Night → 클래식 레드 / Bare → 누디 레드 / Peach → 피치 레드
+• 다크 립: 중화 후 사용
+• 옐로/오렌지/브라운 과다 혼합 금지`,
+  },
+  {
+    active:true, id:"royal-red", name:"Royal Red", nameKo:"로얄 레드",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"cool", opacity:"M",
+    family:"Red", tone:"Deep Cool Red / Ruby Red",
+    hex:"#A01828", healedHex:"#B03040",
+    masstone:"#780010", midtone:"#A01828", basetone:"#C04050",
+    mastoneName:"Dark Cool Red", midtoneName:"Cool Red", bastoneName:"Mid Red",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 254",ci:"CI 56110"},{name:"Red 269",ci:"CI 12466"}],
+    bestUse:["클래식 레드립","쿨톤 레드"],
+    healedResult:"힐링 후 딥 쿨 레드. 안정적인 발색 유지.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Passion Red",ratio:"1:1",effect:"쿨-웜 밸런스"}],
+    caution:"어두운 피부에 단독 전체 적용 시 칙칙해 보일 수 있음.",
+    sessionNotes:"TiO₂ 포함으로 커버력 있음. Masstone 기준 정확히 체크.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 254 | CI 56110
+  - Red 269 | CI 12466
+Temperature: Cool 쪽
+Opacity: Medium
+Family: Red
+
+Tone: Deep Cool Red / Ruby Red / Wine Red / Royal Crimson
+
+【 Use 】
+- 고급스럽고 또렷한 레드립 표현
+- 쿨톤 고객 선호 컬러
+- 선명하지만 과하지 않은 포인트 립
+- 베리/핑크 계열과 믹싱 활용 좋음
+- 2차 리터치 시 깊이감 추가용
+
+【 특징 】
+- 일반 레드보다 깊고 세련된 느낌
+- 힐링 후 루비/와인 레드 계열로 남는 편
+- 오렌지기 거의 없음
+- Date Night보다 클래식하고 안정감 있음
+- 단독 사용 가능
+- 웜톤 고객 단독 사용 시 차갑게 보일 수 있음`,
+  },
+  {
+    active:true, id:"lady-bug", name:"Lady Bug", nameKo:"레이디 버그",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"cool", opacity:"M", opacityNote:"Medium-Low",
+    family:"Red / Coral Red", tone:"Cherry Red / Warm Coral Red",
+    hex:"#CC2838", healedHex:"#D84858",
+    masstone:"#A01020", midtone:"#CC2838", basetone:"#E05060",
+    mastoneName:"Deep Red", midtoneName:"Vivid Cool Red", bastoneName:"Bright Red",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 254",ci:"CI 56110"},{name:"Yellow 14",ci:"CI 21095"}],
+    bestUse:["비비드 레드","여름 컬러"],
+    healedResult:"힐링 후 선명한 쿨 레드. Yellow 14 포함으로 약간 따뜻한 방향 가능.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Red Apple",ratio:"1:1",effect:"웜-쿨 밸런스 레드"}],
+    caution:"Yellow 14 포함 — Royal Red보다 따뜻한 방향. 쿨톤 선호 시 주의.",
+    sessionNotes:"비비드하고 선명. 여름 쿨톤 레드 원하는 고객에 적합.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 254 | CI 56110
+  - Yellow 14 | CI 21095
+Temperature: Neutral-Warm 쪽
+Opacity: Medium
+Family: Red / Coral Red
+
+Tone: Bright Red / Cherry Red / Warm Coral Red / Fresh Tomato Red
+
+【 Use 】
+- 생기 있는 혈색 립 표현
+- 칙칙한 입술 화사하게 보정
+- 웜톤 고객 밝은 레드립
+- 코랄립 / 체리립 표현
+- 2차 리터치 채도 보강용
+
+【 특징 】
+- Yellow 14 포함으로 순수 쿨레드보다 따뜻함
+- 맑고 경쾌한 레드 느낌
+- 힐링 후 코랄레드/체리레드 계열로 남는 편
+- 오렌지기는 강하지 않고 은은하게 존재
+- 단독 사용 활용도 높음
+- 쿨톤 고객 단독 사용 시 약간 따뜻하게 보일 수 있음`,
+  },
+  {
+    active:true, id:"orange-crush", name:"Orange Crush", nameKo:"오렌지 크러쉬",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"organic",
+    temperature:"warm", opacity:"L",
+    family:"Orange / Orange Red", tone:"Warm Orange Red",
+    hex:"#E05030", healedHex:"#E87050",
+    masstone:"#B03010", midtone:"#E05030", basetone:"#F07050",
+    mastoneName:"Deep Orange Red", midtoneName:"Orange Red", bastoneName:"Bright Coral",
+    ciIngredients:[{name:"Red 254",ci:"CI 56110"},{name:"Yellow 14",ci:"CI 21095"}],
+    bestUse:["코랄 오렌지","여름 컬러","웜톤"],
+    healedResult:"힐링 후 웜 오렌지 레드. 산화 주의.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Bazooka",ratio:"1:1",effect:"코랄 핑크"}],
+    caution:"Organic 계열 — 산화 시 오렌지 쉬프트 강함. 쿨톤 피부 주의.",
+    sessionNotes:"TiO₂ 없음. 발색 투명하고 자연스러운 오렌지 레드.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Organic (유기)
+CI Colorants:
+  - Red 254 | CI 56110
+  - Yellow 14 | CI 21095
+Temperature: Warm 쪽
+Opacity: Low
+Family: Orange / Orange Red
+
+Tone: Bright Orange / Warm Coral Orange / Orange Red / Tangerine
+
+【 Use 】
+- 어두운 입술 웜 중화 보조용
+- 코랄립 / 오렌지립 표현
+- 웜톤 고객 혈색 컬러
+- 레드 컬러를 따뜻하게 조정할 때 믹싱
+- 칙칙한 입술 밝고 생기 있게 연출
+
+【 특징 】
+- Yellow 14 포함으로 따뜻함이 강함
+- 선명하고 밝은 오렌지 계열 발색
+- 힐링 후 코랄오렌지 느낌으로 남는 편
+- 단독 사용 시 화사하고 개성 강함
+- 차가운 입술톤 보정 믹싱용 활용도 높음
+- 과사용 시 노란기/주황기 도드라질 수 있음`,
+  },
+  {
+    active:true, id:"lulus-rose", name:"Lulu's Rose", nameKo:"룰루 로즈",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Evenflo", collection:"", pigmentType:"—",
+    temperature:"neutral", opacity:"—",
+    family:"Rose", tone:"Dusty Rose",
+    hex:"#C86878", healedHex:"#D88898",
+    masstone:"#A04858", midtone:"#C86878", basetone:"#E09098",
+    mastoneName:"Deep Dusty Rose", midtoneName:"Dusty Rose", bastoneName:"Light Rose",
+    ciIngredients:[],
+    bestUse:["로즈 립","자연스러운 데일리"],
+    healedResult:"힐링 후 더스티 로즈. Evenflo 특유의 안정적인 발색.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[],
+    caution:"공식 CI 정보 미공개. 성분 확인 불가.",
+    sessionNotes:"공식 데이터 없음. 실제 시술 경험 기반 기록 필요.",
+    proData:`Brand: Perma Blend / Evenflo
+Pigment Type: Blend (혼합계열 추정)
+Temperature: Neutral
+Opacity: Medium (판매처 표기)
+Family: Pink Coral / Coral Pink
+
+Official Description: Soft coral pink with a neutral undertone
+
+Tone: 밝은 코랄 핑크 / 생기 있는 핑크 코랄 / 맑은 블러시 핑크
+- 자연 혈색 립
+- 생기 있는 코랄핑크 립
+
+【 특징 】
+- 자연스럽고 어려보이는 느낌 강조
+- 과하게 차갑지도 노랗지도 않은 중성톤
+- 단독 사용 쉬움
+- Malbec 섞어 진하게 가능
+- Bare 섞어 연하게 가능
+- Neutral coral pink / Medium opacity
+- Fresh natural lip blush color
+- 단독 사용 좋음
+- 칙칙한 입술 생기용
+
+※ 정확한 공식 정보 없음`,
+  },
+  {
+    active:true, id:"hen-party", name:"Hen Party", nameKo:"헨 파티",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"—",
+    temperature:"neutral", opacity:"—",
+    family:"Pink", tone:"—",
+    hex:"#D06878", healedHex:"#E08898",
+    masstone:"#A84858", midtone:"#D06878", basetone:"#E89098",
+    mastoneName:"—", midtoneName:"—", bastoneName:"—",
+    ciIngredients:[],
+    bestUse:["핑크 립"],
+    healedResult:"공식 힐링 데이터 없음.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★☆☆",dark:"★★☆☆☆"},
+    mixPairing:[],
+    caution:"공식 CI 정보 없음. 성분 확인 불가.",
+    sessionNotes:"공식 데이터 없음. 실제 시술 후 기록 업데이트 필요.",
+    proData:`Brand: Perma Blend
+Pigment Type: 공식 표기 없음
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 170 | CI 12475
+  - Yellow 14 | CI 21095
+  - Blue 15 | CI 74160
+Temperature: 공식 표기 없음
+Opacity: 공식 표기 없음
+Family: Pink (공식 설명 bold pink 기준)
+
+Official Description: A bold pink lip pigment
+
+Product Highlights:
+- Vibrant & Saturated
+- High Color Retention
+- Smooth Consistency
+- Suitable for full lip, contour, and blush effects
+
+※ 상세 사용 데이터 없음`,
+  },
+  {
+    active:true, id:"vivid-koral", name:"Vivid Koral", nameKo:"비비드 코럴",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"LUXE Lip Pigments", pigmentType:"blend",
+    temperature:"warm", opacity:"M",
+    family:"Coral", tone:"Warm Orange Pink",
+    hex:"#E86858", healedHex:"#F08070",
+    masstone:"#C04838", midtone:"#E86858", basetone:"#F09080",
+    mastoneName:"Deep Coral", midtoneName:"Vivid Coral", bastoneName:"Soft Coral",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 254",ci:"CI 56110"},{name:"Orange 73",ci:"CI 561170"}],
+    bestUse:["코랄 립","봄 여름","웜톤"],
+    healedResult:"힐링 후 웜 오렌지 핑크. LUXE 라인 특유의 선명한 발색.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Cream De Pink",ratio:"2:1",effect:"파스텔 코랄"}],
+    caution:"Orange 73 포함 — 오렌지 방향 강함. 쿨톤 선호 고객에 비권장.",
+    sessionNotes:"LUXE 라인 — 점도·발색 일반 라인과 다름. 사전 테스트 권장.",
+    proData:`Brand: Perma Blend Luxe
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Orange 73 | CI 561170
+  - Red 254 | CI 56110
+Temperature: Warm
+Opacity: Medium
+Family: Coral
+
+Tone: Orange Pink / Warm Coral / Bright Coral
+
+【 Use 】
+- 코랄립 메인 컬러
+- 화사한 웜톤 립 표현
+- 생기 있는 오렌지핑크 립
+- 단독 사용 또는 믹싱용
+
+【 특징 】
+- 공식 설명: orange and pink blend to produce the perfect coral
+- 오렌지 + 핑크 조합 코랄 컬러
+- 밝고 생기 있는 느낌
+- 웜톤 고객 선호도 높음
+- 단독 사용 시 선명한 코랄 표현`,
+  },
+  {
+    active:true, id:"french-fancy", name:"French Fancy", nameKo:"프렌치 팬시",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"neutral-cool", opacity:"H",
+    family:"Pink", tone:"Dusty Rose / Mauve Pink",
+    hex:"#C06878", healedHex:"#D08898",
+    masstone:"#9A4858", midtone:"#C06878", basetone:"#D89098",
+    mastoneName:"Deep Mauve", midtoneName:"Dusty Rose", bastoneName:"Muted Pink",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 254",ci:"CI 56110"},{name:"Red 101",ci:"CI 77491"},{name:"Yellow 14",ci:"CI 21095"}],
+    bestUse:["MLBB","자연스러운 로즈립","데일리"],
+    healedResult:"힐링 후 뮤트 모브 핑크. 쿨-뉴트럴 균형 유지.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Mauve",ratio:"1:1",effect:"딥 더스티 로즈"}],
+    caution:"Opacity H — 풀커버 발색. 레이어 두께 조절 필요.",
+    sessionNotes:"범용성 최고 수준. 자연스러운 로즈립 원하는 고객 첫 번째 추천.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 254 | CI 56110
+  - Red 101 | CI 77491
+  - Yellow 14 | CI 21095
+Temperature: Cool-Neutral
+Opacity: High
+Family: Pink
+
+Tone: Muted Pink / Dusty Rose / Mauve Pink
+
+【 Use 】
+- 자연스러운 로즈립
+- MLBB 립
+- 차분한 핑크립
+- 데일리 립 컬러
+- 단독 사용 또는 믹싱용
+
+【 특징 】
+- 공식 설명: A highly pigmented muted pink
+- 탁하지 않은 차분한 핑크 계열
+- 과한 형광감 없는 성숙한 핑크톤
+- 힐링 후 부드러운 로즈핑크 느낌
+- 쿨톤 / 뉴트럴톤 고객 활용도 높음`,
+  },
+  {
+    active:true, id:"blushed", name:"Blushed", nameKo:"블루쉬드",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"warm", opacity:"M",
+    family:"Coral / Brick", tone:"Warm Pink Red",
+    hex:"#D89090", healedHex:"#E0A8A8",
+    masstone:"#B07070", midtone:"#D89090", basetone:"#EAB0B0",
+    mastoneName:"Deep Blush", midtoneName:"Warm Blush", bastoneName:"Light Blush",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 101",ci:"CI 77491"},{name:"Red 170",ci:"CI 12475"},{name:"Red 269",ci:"CI 12466"},{name:"Orange 13",ci:"CI 21110"}],
+    bestUse:["블러쉬 립","자연스러운 핑크","웜 핑크"],
+    healedResult:"힐링 후 소프트 웜 블러쉬. 자연스럽고 화사함.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★☆",olive:"★★★☆☆",dark:"★★☆☆☆"},
+    mixPairing:[{colors:"+ Sweet Melissa",ratio:"1:1",effect:"피치 핑크"}],
+    caution:"올리브 피부에 단독 사용 시 칙칙해 보일 수 있음.",
+    sessionNotes:"Orange 13 포함으로 따뜻한 발색. 밝은 피부에 특히 예쁨.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 101 | CI 77491
+  - Orange 13 | CI 21110
+  - Red 170 | CI 12475
+  - Red 269 | CI 12466
+Temperature: Warm 쪽
+Opacity: High
+Family: Coral / Brick
+
+Tone: Muted Coral / Soft Terracotta / Warm Brick / Natural Warm Lip
+
+【 Use 】
+- 자연 혈색 립 표현
+- 웜톤 고객 립 컬러
+- 차분한 코랄/브릭 립 연출
+- 성숙하고 부담 없는 데일리 립
+- 단독 사용 또는 믹싱용
+
+【 특징 】
+- 공식 설명: A highly pigmented muted red
+- 실제 발색은 레드보다 코랄/브릭 계열에 가까움
+- 오렌지 성향이 있어 따뜻하게 표현됨
+- 힐링 후 자연스럽고 부드러운 웜톤 결과감`,
+  },
+  {
+    active:true, id:"sweet-melissa", name:"Sweet Melissa", nameKo:"스위트 멜리사",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"cool", opacity:"H",
+    family:"Pink", tone:"Cool Pink",
+    hex:"#E07888", healedHex:"#E89898",
+    masstone:"#B85068", midtone:"#E07888", basetone:"#F0A0A8",
+    mastoneName:"Deep Cool Pink", midtoneName:"Cool Pink", bastoneName:"Light Pink",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 254",ci:"CI 56110"},{name:"Red 101",ci:"CI 77491"},{name:"Red 238",ci:"CI 173995"},{name:"Yellow 14",ci:"CI 21095"}],
+    bestUse:["쿨 핑크립","비비드 핑크"],
+    healedResult:"힐링 후 쿨 피치 핑크. Opacity H로 선명하게 유지.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Blushed",ratio:"1:1",effect:"웜-쿨 핑크 밸런스"}],
+    caution:"Opacity H — 발색 강함. 연한 결과 원할 시 희석 필요.",
+    sessionNotes:"쿨 핑크 중 발색·안정성 모두 우수. 핑크 계열 첫 번째 추천.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 254 | CI 56110
+  - Red 101 | CI 77491
+  - Red 238 | CI 173995
+  - Yellow 14 | CI 21095
+Temperature: Cool 쪽
+Opacity: High
+Family: Pink / Rose
+
+Tone: Earthy Pink / Dusty Rose Pink / Muted Cool Pink / Natural Rose Lip
+
+【 Use 】
+- 자연스러운 핑크 립 표현
+- MLBB 립 컬러
+- 차분한 로즈 핑크 립
+- 생기 있는 데일리 립
+- 단독 사용 또는 믹싱용
+
+【 특징 】
+- 공식 설명: Earthy Pink Shade
+- 선명 네온핑크가 아닌 차분하고 자연스러운 핑크 계열
+- 브라운/로즈 느낌이 섞인 성숙한 핑크톤
+- 힐링 후 부드럽고 자연스러운 로즈 핑크 결과감
+- 쿨톤 / 뉴트럴톤 고객 활용도 높음`,
+  },
+  {
+    active:true, id:"tres-pink", name:"Tres Pink", nameKo:"트레스 핑크",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"Lip Pigments", pigmentType:"blend",
+    temperature:"cool", opacity:"H",
+    family:"Pink", tone:"Vivid Cool Pink",
+    hex:"#E060A0", healedHex:"#E880B0",
+    masstone:"#B83080", midtone:"#E060A0", basetone:"#F090B8",
+    mastoneName:"Deep Vivid Pink", midtoneName:"Vivid Cool Pink", bastoneName:"Bright Pink",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 254",ci:"CI 56110"},{name:"Red 101",ci:"CI 77491"},{name:"Red 269",ci:"CI 12466"},{name:"Yellow 14",ci:"CI 21095"},{name:"Blue 15",ci:"CI 74160"}],
+    bestUse:["비비드 핑크","포인트 컬러","젊은 이미지"],
+    healedResult:"힐링 후 선명한 쿨 핑크. Blue 15로 쿨톤 강화.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★☆",olive:"★★★☆☆",dark:"★★☆☆☆"},
+    mixPairing:[{colors:"+ Cream De Pink",ratio:"2:1",effect:"파스텔 쿨 핑크"}],
+    caution:"Blue 15 포함 — 가장 쿨한 핑크 계열. 황톤 피부에 비권장.",
+    sessionNotes:"6가지 안료 혼합. 발색 안정적이나 쿨톤 방향 매우 강함.",
+    proData:`Brand: Perma Blend Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 101 | CI 77491
+  - Red 254 | CI 56110
+  - Yellow 14 | CI 21095
+  - Red 269 | CI 12466
+  - Blue 15 | CI 74160
+Temperature: Cool 쪽
+Opacity: High
+Family: Pink
+
+Tone: Earthy Pink / Muted Pink / Dusty Cool Pink / Soft Rose Pink
+
+【 Use 】
+- 자연스러운 핑크 립 표현
+- MLBB 핑크 립
+- 차분한 쿨핑크 립
+- 데일리 립 컬러
+- 단독 사용 또는 믹싱용
+
+【 특징 】
+- 공식 설명: A highly pigmented earthy pink
+- 선명 네온핑크보다 차분하고 깊이감 있는 핑크
+- 쿨 베이스가 느껴지는 소프트 핑크 계열
+- 힐링 후 부드럽고 자연스러운 핑크톤 기대
+- 밝은 피부~중간톤 고객 활용도 높음`,
+  },
+  {
+    active:true, id:"bare", name:"Bare", nameKo:"베어",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Evenflo", collection:"", pigmentType:"—",
+    temperature:"warm", opacity:"M",
+    family:"Nude / Peach Nude", tone:"Nude Peach",
+    hex:"#C89080", healedHex:"#D8A898",
+    masstone:"#A87060", midtone:"#C89080", basetone:"#E0B0A0",
+    mastoneName:"Deep Nude", midtoneName:"Nude Peach", bastoneName:"Light Peach",
+    ciIngredients:[],
+    bestUse:["누드립","베이지 립","Fitzpatrick 1–2"],
+    healedResult:"힐링 후 웜 누드 피치. 밝은 피부에 자연스러운 립 컬러.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Apricot",ratio:"2:1",effect:"따뜻한 피치 누드"}],
+    caution:"공식 CI 미공개. 어두운 피부에 누드 컬러가 어울리지 않을 수 있음.",
+    sessionNotes:"공식 데이터 없음. 밝은 피부 누드립에 적합.",
+    proData:`Brand: Evenflo (Perma Blend)
+Pigment Type: 공식 CI 성분표 미확인
+CI Colorants: 공식 공개 자료 없음 (제공 이미지 기준 미표기)
+Temperature: Warm
+Opacity: Sheer ~ Medium
+Family: Nude / Peach Nude
+추천 피부톤: Fitzpatrick 1-2
+
+공식 설명: Light value, peachy nude pigment with a warm undertone.
+(밝은 명도의 피치 누드 컬러 / 웜 언더톤)
+
+Tone: Warm Nude / Soft Peach Nude / Natural Beige Pink / Fresh Nude
+
+【 Use 】
+- 자연스러운 누드 립 / 매우 은은한 컬러
+- 베이스 컬러용
+- 밝은 입술 표현
+- 다른 컬러와 믹싱용
+- 과한 발색 싫어하는 고객용
+
+【 특징 】
+- 공식 설명: Perfect nude with a warm undertone
+- 따뜻한 언더톤의 누드 컬러
+- Evenflo Lip Set 특성상 티타늄디옥사이드가 적어 비교적 투명감 있는 표현 지향
+- 자연스럽고 생기 있는 립 연출용
+- 단독 사용 시 은은한 누드립, 믹싱 시 톤 다운/부드러운 컬러 조절용`,
+  },
+  {
+    active:true, id:"henna", name:"Henna", nameKo:"헤나",
+    category:"Lip Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"LUXE Lip Pigments", pigmentType:"organic",
+    temperature:"warm", opacity:"H",
+    family:"Brown / Pink Brown", tone:"Warm Pink Brown",
+    hex:"#A06050", healedHex:"#B07868",
+    masstone:"#704030", midtone:"#A06050", basetone:"#C09078",
+    mastoneName:"Deep Brown", midtoneName:"Pink Brown", bastoneName:"Warm Nude Brown",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Yellow 42",ci:"CI 77492"},{name:"Orange 36",ci:"CI 21098"},{name:"Red 254",ci:"CI 56110"},{name:"Black 7",ci:"CI 77266"}],
+    bestUse:["브라운 립","올리브·다크 톤","웜 누드"],
+    healedResult:"힐링 후 웜 브라운 핑크. Black 7 포함으로 깊은 발색.",
+    skinMatch:{fair:"★★★☆☆",medium:"★★★★☆",olive:"★★★★★",dark:"★★★★☆"},
+    mixPairing:[{colors:"+ Subdued Sienna",ratio:"1:1",effect:"딥 테라코타 브라운"}],
+    caution:"Black 7(Carbon Black) 포함 — 어두운 발색. 밝은 피부에 과할 수 있음.",
+    sessionNotes:"올리브·다크 피부 브라운 립 최적. LUXE 라인 점도 확인.",
+    proData:`Brand: Perma Blend LUXE Lip Pigments
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Yellow 42 | CI 77492
+  - Orange 36 | CI 21098
+  - Red 254 | CI 56110
+  - Black 7 | CI 77266
+Temperature: Warm
+Opacity: Medium-to-High
+Family: Pink Brown / Nude Brown / Warm Earthy Rose
+
+공식 설명: A light muted pink-brown with more depth than Subdued Sienna, with a tinge of orange undercurrent.
+한글 해석: 밝고 은은한 핑크 브라운 컬러. Subdued Sienna보다 깊이감이 있으며 오렌지 기운이 살짝 도는 컬러.
+
+Masstone (병 컬러): 따뜻한 로즈 브라운
+Midtone (힐드 예상): 소프트 핑크 브라운
+Basetone: Warm Orange-Brown
+
+추천 활용:
+- MLBB 브라운핑크 립
+- 차분한 누드 립
+- 웜톤 고객 자연립
+- 다크립 2차 보정 후 메인컬러 활용 가능
+
+주의:
+- 쿨톤 고객 단독 사용 시 탁해 보일 수 있음
+- 밝은 입술 단독 사용 시 브라운감 강조 가능
+- 선명한 핑크 원하면 밝은 핑크 계열과 믹스 추천`,
+  },
+
+  // ── LIP SUPPORT ───────────────────────────────────────────
+  {
+    active:true, id:"peach", name:"Peach", nameKo:"피치",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Tina Davies x Perma Blend", collection:"", pigmentType:"blend",
+    temperature:"warm", opacity:"M",
+    family:"Peach / Warm Red", tone:"Warm Peach Red",
+    hex:"#E09070", healedHex:"#E8A888",
+    masstone:"#B86040", midtone:"#E09070", basetone:"#F0B090",
+    mastoneName:"Deep Peach", midtoneName:"Warm Peach", bastoneName:"Light Peach",
+    ciIngredients:[],
+    bestUse:["피치 믹서","웜톤 보조"],
+    healedResult:"힐링 후 따뜻한 피치 톤.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Passion Red",ratio:"1:3",effect:"웜 코랄 레드"},{colors:"+ Bazooka",ratio:"1:2",effect:"피치 코랄"}],
+    caution:"공식 CI 미공개.",
+    sessionNotes:"보조 믹서 컬러. 단독 메인 시술보다 혼합용으로 사용.",
+    proData:`Brand: Tina Davies x Perma Blend
+Pigment Type: Blend (유기+무기 혼합)
+Use: Lips | Use With: Machine Only
+Temperature: Warm
+Opacity: Medium
+Family: Peach / Coral / Warm Modifier
+
+공식 제공 설명:
+Warm Peachy Pigment
+- Provides a soft, subtle warmth to lips, ideal for achieving a natural look.
+Dual Functionality
+- Versatile as a standalone shade or as a modifier to lighten and warm cooler pigments.
+Warm Undertone
+- Perfect pigment to enhance lip warmth.
+Light to Medium Pigment Value
+- Provides balanced opacity for easy use in many lip PMU procedures.
+Broad Skin Tone Compatibility
+- Suitable for fair, pink, beige, olive, and caramel skin tones.
+
+한글 해석:
+따뜻한 피치 계열 색소로 입술에 부드럽고 자연스러운 온기를 더해줌.
+단독 사용 가능하며 차가운 계열 색소를 밝히고 따뜻하게 조절하는 보정 컬러로도 사용 가능.
+밝기 값은 Light to Medium.
+다양한 피부톤에 사용 가능.`,
+  },
+  {
+    active:true, id:"pink-mixer", name:"Pink Mixer", nameKo:"핑크 믹서",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Perma Blend", collection:"Mandy Sauler Areola", pigmentType:"—",
+    temperature:"warm", opacity:"—",
+    family:"Pink", tone:"Warm Pink",
+    hex:"#E08090", healedHex:"#E8A0A8",
+    masstone:"#B85870", midtone:"#E08090", basetone:"#F0A8B0",
+    mastoneName:"Deep Pink", midtoneName:"Warm Pink", bastoneName:"Light Pink",
+    ciIngredients:[],
+    bestUse:["핑크 보조 믹서","유륜 복원"],
+    healedResult:"공식 힐링 데이터 없음.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★☆",olive:"★★★☆☆",dark:"★★☆☆☆"},
+    mixPairing:[{colors:"+ Blushed",ratio:"1:2",effect:"소프트 웜 핑크"}],
+    caution:"립 메인 컬러 아님. 유륜 복원용 원래 목적. 립 단독 사용 주의.",
+    sessionNotes:"Areola 컬렉션 출신. 립 믹서로 소량 활용.",
+    proData:`Brand: Perma Blend
+Pigment Type: 공식 표기 없음
+CI Colorants: 공식 페이지 확인 불가
+Collection: Mandy Sauler Areola
+Use: Areola (유륜 복원용)
+Temperature: Warm
+Opacity: 공식 표기 없음
+Family: Pink
+
+Tone: Soft Pink / Warm Pink / Natural Pink
+
+Notes:
+- 립용 메인컬러 아님
+- 유륜 복원용 보조 핑크 믹서
+
+한글 해석:
+메인 유륜 컬러에 몇 방울 섞어 자연스러운 핑크기를 더해주는 믹서 컬러.`,
+  },
+  {
+    active:true, id:"yellow-clay", name:"Yellow Clay", nameKo:"옐로우 클레이",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Evenflo", collection:"", pigmentType:"blend",
+    temperature:"warm", opacity:"H",
+    family:"Yellow / Yellow Pink", tone:"Golden Yellow / Warm Peach Yellow",
+    hex:"#E0B870", healedHex:"#E8C888",
+    masstone:"#C09040", midtone:"#E0B870", basetone:"#F0D098",
+    mastoneName:"Deep Yellow", midtoneName:"Golden Yellow", bastoneName:"Light Peach Yellow",
+    ciIngredients:[],
+    bestUse:["중화 믹서","따뜻한 보정"],
+    healedResult:"힐링 후 골든 옐로우. Neutralizer 보조 역할.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★☆",olive:"★★★★☆",dark:"★★★★☆"},
+    mixPairing:[{colors:"+ Neutralizer",ratio:"1:1",effect:"강력 오렌지 중화"},{colors:"+ Illume",ratio:"1:1",effect:"골든 옐로우 보정"}],
+    caution:"공식 CI 미공개. 과다 사용 시 황색 발색.",
+    sessionNotes:"Lip Neutralizer 보조. 혼합 비율 정밀 조절 필요.",
+    proData:`Brand: Evenflo Colours / Perma Blend
+Pigment Type: Blend (유기 + 무기 혼합)
+CI Colorants: 공식 CI 리스트 공개되지 않음
+Use: Lip Neutralizer / Corrector
+Temperature: Warm
+Opacity: High (공식 설명상 rich coverage / 강한 커버력)
+Family: Yellow-Pink
+
+Tone: Golden Yellow / Warm Peach Yellow / Neutralizing Yellow-Pink
+
+Notes:
+- 다크 퍼플립 / 브라운립 중화용 컬러
+- Yellow + Red + White 조합 올인원 컨셉
+- 별도 코렉터 믹스 없이 단독 사용 가능하도록 설계됨
+- 피츠패트릭 4, 5, 6 추천
+
+한글 해석:
+보라빛, 갈색기가 있는 어두운 입술을 밝히고 균형 잡아 자연스럽게 중화시키는 옐로우 핑크 코렉터 컬러. 강한 착색력과 커버력을 목표로 제작된 뉴트럴라이저.`,
+  },
+  {
+    active:true, id:"malina-ice", name:"Malina Ice", nameKo:"말리나 아이스",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Evenflo", collection:"", pigmentType:"blend",
+    temperature:"warm", opacity:"—",
+    family:"Orange Pink", tone:"Neon Orange Pink / Warm Coral Pink",
+    hex:"#F07860", healedHex:"#F89878",
+    masstone:"#D05040", midtone:"#F07860", basetone:"#F8A080",
+    mastoneName:"Deep Coral Orange", midtoneName:"Neon Coral", bastoneName:"Light Coral",
+    ciIngredients:[],
+    bestUse:["중화 믹서","코랄 보정","발색 보조"],
+    healedResult:"힐링 후 밝은 코랄 핑크.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Neutralizer",ratio:"1:1",effect:"보정 코랄"},{colors:"+ Bazooka",ratio:"1:2",effect:"강화 코랄"}],
+    caution:"공식 CI 미공개. Neutralizing 겸용으로 비율 조절 중요.",
+    sessionNotes:"Lips/Neutralizing 겸용. 소량으로 발색 조정.",
+    proData:`Brand: Evenflo Colours / Perma Blend
+Pigment Type: 공식 CI 미공개 (일반적으로 Blend 계열로 분류됨)
+CI Colorants: 공식 페이지 공개되지 않음
+Use: Lips / Neutralizing / Main Color
+Temperature: Warm
+Opacity: 공식 수치 미공개
+Family: Orange Pink
+
+Tone: Neon Orange Pink / Warm Coral Pink / Bright Neutralizing Pink
+
+Notes:
+- Fresh neon orange-pink 컬러
+- Warm Red Correctors + White 기반 제작
+- 차갑고 어두운 입술톤(보라 / 블루 / 그레이) 보정용
+- Orange / Yellow 별도 믹싱 없이 중화 과정 단순화
+- Fitzpatrick 1~6 사용 가능
+
+한글 해석:
+따뜻한 언더톤의 선명한 오렌지 핑크 컬러. 어둡고 차가운 입술 톤을 자연스럽게 밝히고 균형 잡도록 설계된 립 피그먼트. 메인 컬러와 중화 컬러 역할을 함께 수행하는 색상.`,
+  },
+  {
+    active:true, id:"creamy-coral", name:"Creamy Coral", nameKo:"크리미 코럴",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Perma Blend", collection:"", pigmentType:"—",
+    temperature:"warm", opacity:"—",
+    family:"Coral", tone:"Soft Coral / Warm Coral / Fresh Peach Coral",
+    hex:"#E89070", healedHex:"#F0A888",
+    masstone:"#C06848", midtone:"#E89070", basetone:"#F8B090",
+    mastoneName:"Deep Coral", midtoneName:"Warm Coral", bastoneName:"Soft Coral",
+    ciIngredients:[],
+    bestUse:["코랄 믹서","피치 코랄 보조"],
+    healedResult:"힐링 후 따뜻한 코랄.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Orange Crush",ratio:"1:2",effect:"비비드 코랄 오렌지"}],
+    caution:"공식 CI 미공개.",
+    sessionNotes:"소프트 코랄 믹서. 주 컬러 조정용.",
+    proData:`Brand: Perma Blend
+Pigment Type: 공식 표기 없음
+CI Colorants: 공식 페이지 확인 불가
+Use: Lips / Main Color
+Temperature: Warm
+Opacity: 공식 표기 없음
+Family: Coral
+
+Tone: Soft Coral / Warm Coral / Fresh Peach Coral
+
+Notes:
+- Soft warm shade로 공식 설명됨
+- 얼굴 톤을 화사하게 보이게 하는 코럴 계열
+- 피부톤을 밝아 보이게 연출하는 컬러
+- 치아가 더 하얗게 보이는 효과 표현 있음
+- 단독 사용 또는 믹스용 가능
+
+한글 해석:
+부드럽고 따뜻한 느낌의 코럴 컬러. 자연스럽게 생기를 주며 얼굴을 밝아 보이게 만드는 립 메인 컬러. 과하지 않은 웜 코럴 계열이라 데일리 립 블러시용으로 적합.`,
+  },
+  {
+    active:true, id:"cream-de-pink", name:"Cream De Pink", nameKo:"크림 드 핑크",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Perma Blend", collection:"", pigmentType:"blend",
+    temperature:"cool", opacity:"H",
+    family:"White Pink / Light Pink", tone:"Milky Pink / Baby Pink",
+    hex:"#F0A8B8", healedHex:"#F8C0C8",
+    masstone:"#D08098", midtone:"#F0A8B8", basetone:"#F8C8D0",
+    mastoneName:"Mid Pink", midtoneName:"Cream Pink", bastoneName:"Baby Pink",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Orange 13",ci:"CI 21110"},{name:"Red 170",ci:"CI 12475"}],
+    bestUse:["희석 믹서","파스텔 핑크","밝기 조절"],
+    healedResult:"힐링 후 밝고 쿨한 베이비 핑크.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★☆",olive:"★★★☆☆",dark:"★★☆☆☆"},
+    mixPairing:[{colors:"+ Tres Pink",ratio:"1:2",effect:"파스텔 쿨 핑크"},{colors:"+ Date Night",ratio:"1:3",effect:"밝은 베리 핑크"}],
+    caution:"Orange 13 포함 — 이름과 달리 완전 쿨 화이트 아님. 약간 따뜻한 방향.",
+    sessionNotes:"주 컬러 희석·밝기 조절용. 단독 사용 시 매우 밝음.",
+    proData:`Brand: Perma Blend
+Pigment Type: Blend 혼합 Lip Pigment
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Orange 13 | CI 21110
+  - Red 170 | CI 12475
+Temperature: Cool
+Opacity: High
+Family: White Pink / Light Pink
+
+Tone: Cool Pink, Milky Pink / White Pink, Baby Pink
+
+Notes:
+- 화이트 베이스가 강한 고발색 라이트 핑크 컬러
+- 입술 혈색이 약하거나 밝은 베이비핑크 계열 표현에 적합
+- 쿨톤 핑크감이 강하며 단독 사용 시 밀키하게 표현됨
+- 메인 컬러를 부드럽고 밝게 만드는 믹싱용으로도 활용 가능
+- 화이트 성분(TiO2) 비율 영향으로 탁하게 올라올 수 있어 과사용 주의
+
+한글 해석:
+차갑고 부드러운 화이트 핑크 계열 컬러. 밝고 깨끗한 핑크 표현용이며 다른 컬러에 섞으면 톤을 부드럽게 낮추고 밀키하게 만들어준다.`,
+  },
+  {
+    active:true, id:"mauve", name:"Mauve", nameKo:"마브",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Perma Blend", collection:"", pigmentType:"blend",
+    temperature:"neutral-warm", opacity:"H",
+    family:"Brown Pink / Dusty Rose / Mauve", tone:"Dusty Rose / Muted Mauve",
+    hex:"#9A6878", healedHex:"#AE8090",
+    masstone:"#785060", midtone:"#9A6878", basetone:"#C09098",
+    mastoneName:"Deep Mauve", midtoneName:"Muted Mauve", bastoneName:"Dusty Pink",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 101",ci:"CI 77491"},{name:"Blue 15",ci:"CI 74160"}],
+    bestUse:["모브 믹서","더스티 로즈","브라운 핑크 보조"],
+    healedResult:"힐링 후 뮤트 모브. Blue 15로 쿨 방향 유지.",
+    skinMatch:{fair:"★★★★★",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ French Fancy",ratio:"1:1",effect:"딥 더스티 로즈"},{colors:"+ Cinnamon Stick",ratio:"1:1",effect:"브라운 모브"}],
+    caution:"Blue 15 포함 — 쿨 방향 강함. 황톤 피부 단독 사용 주의.",
+    sessionNotes:"French Fancy와 최고의 궁합. 자연스러운 뮤트 립 연출.",
+    proData:`Brand: Perma Blend
+Pigment Type: Blend 혼합 Lip Pigment
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 101 | CI 77491 (이미지 기준)
+  - Blue 15 | CI 74160
+Temperature: Warm-Leaning Neutral
+Opacity: High
+Family: Brown Pink / Dusty Rose / Mauve
+
+Tone: Dusty Rose / Brown Pink / Rusty Rose / Muted Mauve / Warm Nude Rose
+
+Notes:
+- 러스티 레드(공식 설명) 기반의 차분한 브라운 핑크 계열
+- 블루 성분 포함으로 너무 주황스럽지 않고 깊이감 있는 컬러
+- 웜톤에 가깝지만 완전한 오렌지웜은 아니며 뉴트럴에 가까움
+- 성숙하고 세련된 MLBB, 말린장미 느낌 표현에 적합
+- 화이트(TiO2) 포함으로 발색력 높고 커버력 우수함
+
+한글 해석:
+브라운과 핑크가 섞인 차분한 마브 컬러. 따뜻한 느낌이 있지만 과하지 않아 자연스럽고 고급스러운 입술색 표현에 좋다.`,
+  },
+  {
+    active:true, id:"cinnamon-stick", name:"Cinnamon Stick", nameKo:"시나몬 스틱",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Perma Blend", collection:"", pigmentType:"blend",
+    temperature:"cool", opacity:"H",
+    family:"Brown Nude / Cinnamon Brown", tone:"Cinnamon Brown / Earthy Nude",
+    hex:"#8B5848", healedHex:"#A07060",
+    masstone:"#603828", midtone:"#8B5848", basetone:"#B08070",
+    mastoneName:"Deep Cinnamon", midtoneName:"Cinnamon Brown", bastoneName:"Warm Nude Brown",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Red 101",ci:"CI 77491"},{name:"Red 269",ci:"CI 12466"},{name:"Yellow 42",ci:"CI 77492"}],
+    bestUse:["브라운 믹서","어시 브라운","쿨 누드 브라운"],
+    healedResult:"힐링 후 쿨 브라운 누드. 어시 방향 유지.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★★",dark:"★★★★☆"},
+    mixPairing:[{colors:"+ Henna",ratio:"1:2",effect:"딥 브라운 핑크"},{colors:"+ Mauve",ratio:"1:1",effect:"브라운 모브"}],
+    caution:"쿨 방향 브라운. 웜 브라운 원하는 경우 Subdued Sienna 혼합.",
+    sessionNotes:"올리브·다크 피부 브라운 립에 Henna와 함께 가장 많이 사용.",
+    proData:`Brand: Perma Blend
+Pigment Type: Blend Lip Pigment
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Red 101 | CI 77491
+  - Red 269 | CI 12466
+  - Yellow 42 | CI 77492
+Temperature: Cool-Leaning Neutral
+Opacity: High
+Family: Brown Nude / Cinnamon Brown / Earthy Nude
+
+Tone: Cinnamon Brown / Muted Brown Nude / Earthy Nude / Cool Brown / Dusty Caramel
+
+Notes:
+- 공식 설명은 earthy nude with a slightly warm undertone 이지만, 실제 구성은 Red 101 + Yellow 42 + Titanium Dioxide 조합에 브라운감이 강함.
+- 이미지 차트 기준 온도 게이지도 쿨 쪽에 가까운 뉴트럴로 표시됨.
+- 완전한 웜 브라운보다는 회갈색·누드 브라운 계열에 가까움.
+- 채도 낮은 성숙한 누드립, 브라운 MLBB, 깊이감 있는 립 베이스용으로 적합.
+- 화이트 포함으로 커버력과 발색력 우수.
+
+한글 해석:
+차분한 시나몬 브라운 누드 컬러. 따뜻함이 살짝 있으나 실제 표현은 중성~쿨 브라운 느낌이 강하며 자연스럽고 세련된 누드 립 표현에 좋다.`,
+  },
+  {
+    active:true, id:"subdued-sienna", name:"Subdued Sienna", nameKo:"서브듀드 시에나",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Perma Blend", collection:"LUXE", pigmentType:"blend",
+    temperature:"warm", opacity:"M",
+    family:"Orange Brown / Terracotta Nude", tone:"Warm Terracotta Brown",
+    hex:"#B06840", healedHex:"#C08060",
+    masstone:"#804820", midtone:"#B06840", basetone:"#D09060",
+    mastoneName:"Deep Terracotta", midtoneName:"Terracotta Brown", bastoneName:"Warm Sienna",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Yellow 42",ci:"CI 77492"},{name:"Orange 36",ci:"CI 21098"},{name:"Red 101",ci:"CI 77491"}],
+    bestUse:["테라코타","웜 브라운 믹서","올리브·다크 보조"],
+    healedResult:"힐링 후 웜 테라코타 브라운.",
+    skinMatch:{fair:"★★★☆☆",medium:"★★★★☆",olive:"★★★★★",dark:"★★★★☆"},
+    mixPairing:[{colors:"+ Henna",ratio:"1:1",effect:"딥 웜 브라운"},{colors:"+ Cinnamon Stick",ratio:"1:1",effect:"쿨-웜 밸런스 브라운"}],
+    caution:"LUXE 라인 — 점도 확인. 밝은 피부에 과할 수 있음.",
+    sessionNotes:"올리브·다크 피부 테라코타 립 최적. LUXE 라인 특성 확인.",
+    proData:`Brand: Perma Blend LUXE
+Pigment Type: Blend (유기 + 무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Yellow 42 | CI 77492
+  - Orange 36 | CI 21098
+  - Red 101 | CI 77491
+Temperature: Warm
+Opacity: Medium
+Family: Orange Brown / Terracotta Nude / Warm Brown Nude
+
+컬러 해석:
+차분한 브라운 베이스에 오렌지기가 살짝 들어간 시에나 컬러. 강한 오렌지나 진한 브라운이 아니라, 자연스럽고 은은한 브라운 누드 계열. 데일리 립, MLBB 누드립, 성숙한 웜톤 립 표현에 적합.
+
+공식 설명 요약:
+"barely-there brown for an everyday natural appearing lip color"
+→ 존재감 과하지 않은 자연스러운 브라운 립 컬러.
+
+시술 활용:
+- 어두운 입술 위 메인컬러보단 2차 보정 후 자연 마무리용 좋음
+- 채도 높은 코랄/핑크와 믹스하면 세련된 누드톤 가능
+- 단독 사용 시 차분하고 고급스러운 웜 브라운 립 표현 가능
+
+추천 고객층:
+- 웜톤 피부
+- 누드립 선호 고객
+- 과한 핑크 싫어하는 고객
+- 자연스러운 성숙 립 원할 때
+
+한줄 평가:
+브라운 립이 부담스러운 고객도 쓰기 쉬운 부드러운 오렌지 브라운 누드 컬러`,
+  },
+  {
+    active:true, id:"peach-veil", name:"Peach Veil", nameKo:"피치 베일",
+    category:"Lip Color", subtype:"Support", type:"Mixer",
+    brand:"Perma Blend", collection:"LUXE", pigmentType:"blend",
+    temperature:"warm", opacity:"M",
+    family:"Beige Peach / Nude Peach Pink", tone:"Warm Beige Pink",
+    hex:"#D09878", healedHex:"#E0B090",
+    masstone:"#A07050", midtone:"#D09878", basetone:"#E8B898",
+    mastoneName:"Deep Beige", midtoneName:"Warm Beige Peach", bastoneName:"Light Peach",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Yellow 42",ci:"CI 77492"},{name:"Orange 36",ci:"CI 21098"},{name:"Red 170",ci:"CI 12475"},{name:"Black 7",ci:"CI 77266"}],
+    bestUse:["베이지 피치 믹서","누드 보조","희석 베이스"],
+    healedResult:"힐링 후 웜 베이지 피치. Black 7 소량 포함으로 약간 무게감.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[{colors:"+ Bare",ratio:"1:1",effect:"더 따뜻한 누드 피치"}],
+    caution:"Black 7 포함 — 완전 밝은 피치 아님. 레이어 두께 주의.",
+    sessionNotes:"LUXE 라인. 누드 계열 믹서 중 가장 따뜻한 방향.",
+    proData:`Brand: Perma Blend LUXE
+Pigment Type: Blend (유기 + 무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Yellow 42 | CI 77492
+  - Orange 36 | CI 21098
+  - Red 170 | CI 12475
+  - Black 7 | CI 77266
+Temperature: Warm
+Opacity: Medium to High (M~H)
+Family: Beige Peach / Nude Peach Pink / Soft Warm Peach
+
+컬러 해석:
+베이지가 섞인 소프트 피치 핑크 쪽이다. 화이트 + 옐로우 + 오렌지 + 레드에 블랙 7이 아주 소량 들어가 있어서 형광 피치가 아니라 톤다운된 내추럴 피치 누드 컬러로 보인다.
+
+공식 설명 요약:
+"lighter soft peach color / youthful / natural peach lip / warm base"
+→ 밝고 부드러운 피치 컬러
+→ 자연스럽고 어려 보이는 느낌
+→ 따뜻한 베이스의 연한 복숭아 립
+
+시술 활용:
+- 창백한 입술 생기 추가용 좋음
+- 진한 컬러 위 탑코트처럼 부드럽게 중화 가능
+- 누드립 / 자연립 / 첫입술 시술 고객 추천
+- 너무 핑크 싫고 너무 오렌지도 싫은 고객에게 좋음
+
+추천 고객층:
+- 웜톤 피부
+- 밝고 자연스러운 립 원할 때
+- 20~40대 데일리 립 선호층
+- 남성 고객 자연 혈색 표현에도 활용 가능`,
+  },
+  {
+    active:true, id:"apricot", name:"Apricot", nameKo:"애프리콧",
+    category:"Lip Color", subtype:"Support", type:"Corrector",
+    brand:"Perma Blend", collection:"", pigmentType:"blend",
+    temperature:"warm", opacity:"H",
+    family:"Orange / Apricot / Warm Corrector", tone:"Soft Apricot Orange",
+    hex:"#F0A060", healedHex:"#F8B878",
+    masstone:"#D07830", midtone:"#F0A060", basetone:"#F8C080",
+    mastoneName:"Deep Apricot", midtoneName:"Apricot Orange", bastoneName:"Light Apricot",
+    ciIngredients:[{name:"Titanium Dioxide",ci:"CI 77891"},{name:"Yellow 14",ci:"CI 21095"},{name:"Red 170",ci:"CI 12475"}],
+    bestUse:["쿨톤·그레이 중화","따뜻하게 보정","코렉터"],
+    healedResult:"힐링 후 웜 애프리콧. 중화 목적으로 사용 시 발색 조합에 따라 다름.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★☆",olive:"★★★★☆",dark:"★★★★☆"},
+    mixPairing:[{colors:"+ Colorizer",ratio:"1:1",effect:"강력 중화 믹스"}],
+    caution:"Corrector 목적 — 단독 메인 컬러로 사용 비권장.",
+    sessionNotes:"회색·푸른기 강한 피부 또는 기존 문신 중화에 사용.",
+    proData:`Brand: Perma Blend
+Pigment Type: Blend (유기+무기 혼합)
+CI Colorants:
+  - Titanium Dioxide | CI 77891
+  - Yellow 14 | CI 21095
+  - Red 170 | CI 12475
+Temperature: Warm
+Opacity: High
+Family: Orange / Apricot / Warm Corrector
+
+Tone: Soft Apricot Orange
+
+Key Note: 밝고 부드러운 오렌지 코렉터
+Best Use: 회색·푸른기 중화 / 컬러 따뜻하게 보정`,
+  },
+
+  // ── LIP NEUTRALIZER ───────────────────────────────────────
+  {
+    active:true, id:"colorizer", name:"Colorizer", nameKo:"컬러라이저",
+    category:"Lip Color", subtype:"Neutralizer", type:"Corrector",
+    brand:"Evenflo", collection:"", pigmentType:"corrector",
+    temperature:"cool", opacity:"—",
+    family:"Bright Red", tone:"Cool Red / Pinkish Red",
+    hex:"#E03040", healedHex:"#E85060",
+    masstone:"#B01020", midtone:"#E03040", basetone:"#F06070",
+    mastoneName:"Deep Corrector Red", midtoneName:"Cool Red", bastoneName:"Pinkish Red",
+    ciIngredients:[],
+    bestUse:["립·아이라이너 중화","쿨레드 보정"],
+    healedResult:"코렉터 목적 — 힐링 결과 컬러와 혼합 비율에 따라 다름.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★☆",olive:"★★★★☆",dark:"★★★★☆"},
+    mixPairing:[{colors:"+ Neutralizer",ratio:"1:1",effect:"쿨-웜 중화 밸런스"}],
+    caution:"공식 CI 미공개. Lips/Eyeliner 겸용. 단독 메인 절대 비권장.",
+    sessionNotes:"립·아이라이너 색조 보정 목적. 비율 최소화 원칙.",
+    proData:`Brand: Evenflo Colours / Perma Blend
+Pigment Type: Corrector / Modifier
+CI Colorants: 공식 페이지 확인 불가
+Use: Lips / Eyeliner Modifier
+Temperature: Cool
+Opacity: 공식 표기 없음
+Family: Bright Red
+
+Tone: Bright Red, Cool Red, Pinkish Red
+
+Notes:
+- 밝은 레드 계열 코렉터 컬러
+- 중화(Neutralizer / Illume) 후 2차 세션 마무리용으로 사용
+- 힐링 후 핑키한 결과를 만들기 위해 믹스 가능
+- 블랙 아이라인에 소량 추가 시 푸르게 변색되는 현상 완화용으로 사용 가능
+- 과거 일부 판매처는 Warm으로 표기했으나, 공식 correction-set 자료는 Cool undertone으로 안내함. 최신 공식 기준으로 Cool로 보는 것이 정확함.
+
+한글 해석:
+선명한 레드 코렉터 컬러. 어두운 입술 중화 후 생기 있고 핑크빛 결과를 만들기 위한 후속 컬러이며, 단독 메인컬러보다는 보정·믹스용 활용도가 높음.`,
+  },
+  {
+    active:true, id:"neutralizer-lip", name:"Neutralizer", nameKo:"뉴트럴라이저",
+    category:"Lip Color", subtype:"Neutralizer", type:"Corrector",
+    brand:"Evenflo", collection:"", pigmentType:"corrector",
+    temperature:"warm", opacity:"—",
+    family:"Bright Orange", tone:"Bright Orange / Correction Orange",
+    hex:"#F06030", healedHex:"#F88050",
+    masstone:"#C04010", midtone:"#F06030", basetone:"#F89060",
+    mastoneName:"Deep Orange", midtoneName:"Correction Orange", bastoneName:"Bright Orange",
+    ciIngredients:[],
+    bestUse:["립 중화 전용","쿨톤 기저 보정"],
+    healedResult:"코렉터 — 혼합 결과로 평가.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★☆",olive:"★★★★☆",dark:"★★★★☆"},
+    mixPairing:[{colors:"+ Illume",ratio:"1:1",effect:"옐로우-오렌지 중화"},{colors:"+ Yellow Clay",ratio:"1:1",effect:"골든 중화"}],
+    caution:"공식 CI 미공개. 립 중화 전용. 절대 단독 사용 금지.",
+    sessionNotes:"오렌지 기반 중화. Illume과 함께 쿨톤 강한 피부 기저 보정.",
+    proData:`Brand: Evenflo Colours / Perma Blend
+Pigment Type: Corrector / Modifier
+CI Colorants: 공식 페이지 확인 불가
+Use: Lips (립 중화 전용)
+Temperature: Warm
+Opacity: 공식 표기 없음
+Family: Bright Orange
+
+Tone: Bright Orange, Warm Orange, Correction Orange
+
+Notes:
+- 강한 오렌지 계열 립 뉴트럴라이저 컬러
+- 핑크·블루·쿨톤기가 있는 밝은~중간 어두운 입술 보정용
+- 단독 사용 가능 / 타겟 컬러와 1:1 믹스 가능
+- 1차 세션 중화용으로 가장 많이 쓰이는 대표 컬러
+- 보정 후 자연스러운 베이지-피치 톤으로 힐링되는 방향성 안내됨
+
+한글 해석:
+쿨톤, 보랏빛, 푸른기, 어두운 입술을 따뜻하게 균형 잡아주는 밝은 오렌지 코렉터. 메인 컬러 전 단계 또는 믹스용으로 사용되는 중화 전용 색소.`,
+  },
+  {
+    active:true, id:"illume", name:"Illume", nameKo:"일륨",
+    category:"Lip Color", subtype:"Neutralizer", type:"Corrector",
+    brand:"Evenflo", collection:"", pigmentType:"corrector",
+    temperature:"warm", opacity:"H",
+    family:"Golden Yellow", tone:"Golden Yellow / Correction Yellow",
+    hex:"#E8B830", healedHex:"#F0C850",
+    masstone:"#C09010", midtone:"#E8B830", basetone:"#F0D060",
+    mastoneName:"Deep Yellow", midtoneName:"Golden Yellow", bastoneName:"Light Yellow",
+    ciIngredients:[],
+    bestUse:["립 중화 전용","황색 보정","쿨톤 기저"],
+    healedResult:"코렉터 — 혼합 결과로 평가.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★☆",olive:"★★★★☆",dark:"★★★★☆"},
+    mixPairing:[{colors:"+ Neutralizer",ratio:"1:1",effect:"오렌지-옐로우 중화"},{colors:"+ Yellow Clay",ratio:"1:1",effect:"강력 옐로우 보정"}],
+    caution:"공식 CI 미공개. Opacity H — 과다 사용 시 황색 발색. 최소 비율 원칙.",
+    sessionNotes:"가장 강력한 옐로우 코렉터. Neutralizer와 세트로 사용.",
+    proData:`Brand: Evenflo Colours / Perma Blend
+Pigment Type: Corrector / Modifier
+CI Colorants: 공식 페이지 확인 불가
+Use: Lips (립 중화 전용)
+Temperature: Warm
+Opacity: High / Opaque
+Family: Golden Yellow
+
+Tone: Golden Yellow / Warm Yellow / Correction Yellow
+
+Notes:
+- 강한 골든 옐로우 계열 립 코렉터 컬러
+- 깊고 진한 보라빛, 회보라빛, 쿨톤 다크립 중화용으로 설계됨
+- 단독 사용 가능 / 타겟 컬러와 1:1 믹스 가능
+- Neutralizer보다 더 깊은 퍼플톤 보정용으로 사용됨
+- 1차 세션 베이스 교정용으로 많이 사용됨
+
+한글 해석:
+진하고 어두운 퍼플 계열 입술을 따뜻하게 밝히기 위한 고농도 골든 옐로우 코렉터. 깊은 다크립 교정 시 단독 또는 메인 컬러와 믹스해 사용하는 중화 전용 색소.`,
+  },
+
+  // ── BROW ──────────────────────────────────────────────────
+  {
+    active:true, id:"brow-sample", name:"Sample Brown", nameKo:"샘플 브라운",
+    category:"Brow Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"", pigmentType:"blend",
+    temperature:"neutral", opacity:"M",
+    family:"Brown", tone:"Neutral Brown",
+    hex:"#5A3820", healedHex:"#7A5840",
+    masstone:"#3A2010", midtone:"#5A3820", basetone:"#7A5840",
+    mastoneName:"Dark Brown", midtoneName:"Neutral Brown", bastoneName:"Medium Brown",
+    ciIngredients:[],
+    bestUse:["Ombré","Combo Brows"],
+    healedResult:"힐링 후 뉴트럴 브라운.",
+    skinMatch:{fair:"★★★★☆",medium:"★★★★★",olive:"★★★★☆",dark:"★★★☆☆"},
+    mixPairing:[],
+    caution:"샘플 데이터 — 실제 컬러 미확정.",
+    sessionNotes:"샘플 데이터 — 실제 컬러 확정 후 교체 예정.",
+  },
+
+  // ── EYELINER ──────────────────────────────────────────────
+  {
+    active:true, id:"double-black", name:"Double Black", nameKo:"더블 블랙",
+    category:"Eyeliner Color", subtype:"Main", type:"Main",
+    brand:"Perma Blend", collection:"", pigmentType:"organic",
+    temperature:"cool", opacity:"H",
+    family:"Black", tone:"Pure Black",
+    hex:"#1A1A1A", healedHex:"#3A3A3A",
+    masstone:"#0A0A0A", midtone:"#1A1A1A", basetone:"#3A3A3A",
+    mastoneName:"Pure Black", midtoneName:"Black", bastoneName:"Soft Black",
+    ciIngredients:[{name:"Black 7",ci:"CI 77266"}],
+    bestUse:["아이라이너","헤어라인 포인트"],
+    healedResult:"힐링 후 쿨 챠콜. 그레이 쉬프트 최소. Carbon Black 순도 높음.",
+    skinMatch:{fair:"★★★☆☆",medium:"★★★★☆",olive:"★★★★☆",dark:"★★★★★"},
+    mixPairing:[],
+    caution:"밝은 피부 단독 전체 아이라인 시 너무 강할 수 있음. 희석 또는 레이어 조절.",
+    sessionNotes:"눈썹 전체 단독 사용 비권장. 아이라이너·포인트 전용.",
+  },
+];
+
+// ════════════════════════════════════════════════════════════
+//  STOCK — localStorage
+// ════════════════════════════════════════════════════════════
+const STOCK_KEY = 'nb_pmu_stock_v1';
+function loadStock(){ try{ return JSON.parse(localStorage.getItem(STOCK_KEY))||{}; }catch{ return {}; } }
+function saveStock(d){ try{ localStorage.setItem(STOCK_KEY,JSON.stringify(d)); }catch{} }
+let stockData = loadStock();
+function getStock(id){ return stockData[id]||'out'; }
+function setStock(id,val){ stockData[id]=val; saveStock(stockData); }
+
+function onCheckChange(id, checked){
+  setStock(id, checked ? 'in' : 'out');
+  refreshStock(id);
+}
+function onStarClick(id){
+  setStock(id, getStock(id)==='wish' ? 'out' : 'wish');
+  refreshStock(id);
+}
+
+function refreshStock(id){
+  const s = getStock(id);
+  // update sc-card
+  const sc = document.getElementById(`sc-${id}`);
+  if(sc){ sc.className = `sc-card${s==='in'?' sc-in':s==='wish'?' sc-wish':''}`; }
+  // update pro-card
+  const pc = document.getElementById(`pc-${id}`);
+  if(pc){ pc.className = `pro-card${s==='in'?' sc-in':s==='wish'?' sc-wish':''}`; }
+  // update all checkboxes/stars/badges with this id
+  document.querySelectorAll(`[data-stock-id="${id}"]`).forEach(el => {
+    if(el.classList.contains('stock-check'))  el.checked = (s==='in');
+    if(el.classList.contains('stock-star'))   el.className = 'stock-star'+(s==='wish'?' wished':'');
+    if(el.classList.contains('stock-badge')){
+      el.className = 'stock-badge '+(s==='in'?'badge-in':s==='wish'?'badge-wish':'badge-out');
+      el.textContent = s==='in'?'보유중':s==='wish'?'구매예정':'없음';
+    }
+  });
+  if(state.stock) render();
+}
+
+// ════════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════════
+let state = { cat:'all', search:'', temp:null, opacity:null, subtype:null, brand:null, stock:null };
+
+function getFiltered(){
+  const q = state.search.toLowerCase();
+  return PMU_COLORS.filter(c => {
+    if(!c.active) return false;
+    if(state.cat !== 'all' && c.category !== state.cat) return false;
+    if(q && !c.name.toLowerCase().includes(q) && !(c.nameKo||'').includes(q)) return false;
+    if(state.temp){
+      const t=(c.temperature||'').toLowerCase();
+      if(state.temp==='neutral'){ if(!t.includes('neutral')) return false; }
+      else { if(!t.startsWith(state.temp)) return false; }
+    }
+    if(state.opacity && c.opacity !== state.opacity) return false;
+    if(state.subtype && c.subtype !== state.subtype) return false;
+    if(state.brand   && c.brand   !== state.brand)   return false;
+    if(state.stock   && getStock(c.id) !== state.stock) return false;
+    return true;
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════════════════════
+const CAT_ORDER     = ['Lip Color','Brow Color','Eyeliner Color','Hairline Color'];
+const SUBTYPE_ORDER = ['Main','Support','Neutralizer'];
+const TYPE_CLS  = { Main:'tag-main', Mixer:'tag-mixer', Corrector:'tag-corr', Neutralizer:'tag-neut' };
+const TEMP_MAP  = { cool:'Cool', warm:'Warm', neutral:'Neutral', 'neutral-cool':'Neutral Cool', 'neutral-warm':'Neutral Warm' };
+const TEMP_CLS  = { cool:'tag-cool-t', warm:'tag-warm-t', neutral:'tag-neut-t', 'neutral-cool':'tag-cool-t', 'neutral-warm':'tag-warm-t' };
+const PIG_CLS   = { blend:'tag-blend', organic:'tag-org' };
+const OP_CLS    = { L:'tag-op-L', M:'tag-op-M', H:'tag-op-H' };
+const tl = t => TEMP_MAP[t]||t||'—';
+const tc = t => TEMP_CLS[t]||'tag-neut-t';
+
+function groupBy(colors, key, order){
+  const map={};
+  order.forEach(k=>{ map[k]=[]; });
+  colors.forEach(c=>{ const k=c[key]||'Other'; (map[k]=map[k]||[]).push(c); });
+  return order.map(k=>({key:k,items:map[k]||[]})).filter(g=>g.items.length);
+}
+
+function stockControl(id){
+  const s = getStock(id);
+  return `<div class="stock-row">
+    <input class="stock-check" type="checkbox" data-stock-id="${id}" ${s==='in'?'checked':''} onchange="onCheckChange('${id}',this.checked)"/>
+    <button class="stock-star${s==='wish'?' wished':''}" data-stock-id="${id}" onclick="onStarClick('${id}')" title="구매예정">⭐</button>
+    <span class="stock-badge ${s==='in'?'badge-in':s==='wish'?'badge-wish':'badge-out'}" data-stock-id="${id}">${s==='in'?'보유중':s==='wish'?'구매예정':'없음'}</span>
+  </div>`;
+}
+
+function toneStrip(c){
+  if(!c.masstone) return '<span style="font-size:10px;color:var(--text-muted)">데이터 없음</span>';
+  return `<div class="tone-strip">
+    <div class="tone-swatch">
+      <div class="tone-circle" style="background:${c.masstone}"></div>
+      <div class="tone-lbl">Masstone</div>
+      <div class="tone-name">${c.mastoneName||''}</div>
+    </div>
+    <div class="tone-arrow">›</div>
+    <div class="tone-swatch">
+      <div class="tone-circle" style="background:${c.midtone}"></div>
+      <div class="tone-lbl">Midtone</div>
+      <div class="tone-name">${c.midtoneName||''}</div>
+    </div>
+    <div class="tone-arrow">›</div>
+    <div class="tone-swatch">
+      <div class="tone-circle" style="background:${c.basetone}"></div>
+      <div class="tone-lbl">Basetone</div>
+      <div class="tone-name">${c.bastoneName||''}</div>
+    </div>
+  </div>`;
+}
+
+function ciList(c){
+  if(!c.ciIngredients||!c.ciIngredients.length)
+    return '<span style="font-size:10px;color:var(--text-muted)">공식 CI 미공개</span>';
+  return `<div class="ci-stack">${c.ciIngredients.map(i=>
+    `<div class="ci-item"><span class="ci-name">${i.name}</span><span class="ci-num">${i.ci}</span></div>`
+  ).join('')}</div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  SIMPLE CHART — detailed cards
+// ════════════════════════════════════════════════════════════
+function buildSimple(){
+  const el = document.getElementById('simple-content');
+  const colors = getFiltered();
+  updateCount(colors.length);
+  if(!colors.length){ el.innerHTML = emptyHTML(); return; }
+
+  let html = '';
+  groupBy(colors,'category',CAT_ORDER).forEach(({key:cat,items})=>{
+    html += `<div class="sg"><div class="sg-title">${cat}</div>`;
+    if(cat==='Lip Color'){
+      groupBy(items,'subtype',SUBTYPE_ORDER).forEach(({key:sub,items:si})=>{
+        html += `<div class="sub-label">${sub} Colors</div>`;
+        html += `<div class="simple-grid">${si.map(c=>buildSimpleCard(c)).join('')}</div>`;
+      });
+    } else {
+      html += `<div class="simple-grid">${items.map(c=>buildSimpleCard(c)).join('')}</div>`;
+    }
+    html += `</div>`;
+  });
+  el.innerHTML = html;
+}
+
+function buildSimpleCard(c){
+  const s = getStock(c.id);
+  const cardCls = `sc-card${s==='in'?' sc-in':s==='wish'?' sc-wish':''}`;
+
+  return `<div class="${cardCls}" id="sc-${c.id}">
+
+    <!-- Banner -->
+    <div class="sc-banner">
+      <div class="sc-swatch" style="background:${c.hex}">
+        <span class="sc-hex">${c.hex.toUpperCase()}</span>
+      </div>
+      <div class="sc-head">
+        <div class="sc-name">${c.name}</div>
+        <div class="sc-name-ko">${c.nameKo||''}</div>
+        <div class="sc-tags">
+          <span class="tag ${TYPE_CLS[c.type]||'tag-main'}">${c.type}</span>
+          <span class="tag ${tc(c.temperature)}">${tl(c.temperature)}</span>
+          ${c.opacity&&c.opacity!=='—'?`<span class="tag ${OP_CLS[c.opacity]||''}">Opacity ${c.opacityNote||c.opacity}</span>`:''}
+          ${c.pigmentType&&c.pigmentType!=='—'?`<span class="tag ${PIG_CLS[c.pigmentType]||'tag-blend'}">${c.pigmentType}</span>`:''}
+        </div>
+      </div>
+    </div>
+
+    <!-- Body row 1: meta + stock -->
+    <div class="sc-body">
+      <div class="sc-col">
+        <div class="field">
+          <span class="field-lbl">Brand</span>
+          <span class="field-val">${c.brand}</span>
+        </div>
+        <div class="field">
+          <span class="field-lbl">Collection</span>
+          <span class="field-val">${c.collection||'—'}</span>
+        </div>
+        <div class="field">
+          <span class="field-lbl">Category</span>
+          <span class="field-val">${c.category} · ${c.subtype}</span>
+        </div>
+        <div class="field">
+          <span class="field-lbl">Family</span>
+          <span class="field-val">${c.family||'—'}</span>
+        </div>
+      </div>
+
+      <div class="sc-col">
+        <div class="field">
+          <span class="field-lbl">Stock</span>
+          ${stockControl(c.id)}
+        </div>
+        <div class="field">
+          <span class="field-lbl">Best Use</span>
+          <div class="pill-row">${(c.bestUse||[]).map(u=>`<span class="pill">${u}</span>`).join('')||'—'}</div>
+        </div>
+        <div class="field">
+          <span class="field-lbl">Tone</span>
+          <span class="field-val">${c.tone||'—'}</span>
+        </div>
+      </div>
+
+      <!-- Tone Strip full width -->
+      <div class="sc-col-full">
+        <div class="field-lbl">Masstone · Midtone · Basetone</div>
+        ${toneStrip(c)}
+      </div>
+
+      <!-- CI full width -->
+      <div class="sc-col-full">
+        <div class="field-lbl">CI Ingredients</div>
+        ${ciList(c)}
+      </div>
+    </div>
+
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PRO DETAIL — full cards
+// ════════════════════════════════════════════════════════════
+function buildPro(){
+  const el = document.getElementById('pro-content');
+  const colors = getFiltered();
+  if(!colors.length){ el.innerHTML = emptyHTML(); return; }
+
+  let html = '';
+  groupBy(colors,'category',CAT_ORDER).forEach(({key:cat,items})=>{
+    html += `<div class="sg" style="grid-column:1/-1"><div class="sg-title">${cat}</div></div>`;
+    if(cat==='Lip Color'){
+      groupBy(items,'subtype',SUBTYPE_ORDER).forEach(({key:sub,items:si})=>{
+        html += `<div class="sub-label" style="grid-column:1/-1">${sub} Colors</div>`;
+        si.forEach(c=>{ html += buildProCard(c); });
+      });
+    } else {
+      items.forEach(c=>{ html += buildProCard(c); });
+    }
+  });
+  el.innerHTML = html;
+}
+
+function buildProCard(c){
+  const s = getStock(c.id);
+  const cardCls = `pro-card${s==='in'?' sc-in':s==='wish'?' sc-wish':''}`;
+
+  return `<div class="${cardCls}" id="pc-${c.id}">
+
+    <!-- Banner -->
+    <div class="pro-banner">
+      <div class="pro-clr" style="background:${c.hex}">
+        <span class="pro-hex">${c.hex.toUpperCase()}</span>
+      </div>
+      <div class="pro-hl" style="background:${c.hex}18">
+        <div class="hl-dot" style="background:${c.healedHex}"></div>
+        <div class="hl-txt">${c.healedHex}</div>
+      </div>
+      <div class="pro-info">
+        <div class="pro-name">${c.name}</div>
+        <div class="pro-name-ko">${c.nameKo||''}</div>
+        <div class="pro-tags">
+          <span class="tag ${TYPE_CLS[c.type]||'tag-main'}">${c.type}</span>
+          <span class="tag ${tc(c.temperature)}">${tl(c.temperature)}</span>
+          ${c.opacity&&c.opacity!=='—'?`<span class="tag ${OP_CLS[c.opacity]||''}">Opacity ${c.opacityNote||c.opacity}</span>`:''}
+          ${c.pigmentType&&c.pigmentType!=='—'?`<span class="tag ${PIG_CLS[c.pigmentType]||'tag-blend'}">${c.pigmentType}</span>`:''}
+          <span style="font-size:9px;color:var(--text-muted);margin-left:2px">${c.brand}</span>
+        </div>
+        ${stockControl(c.id)}
+      </div>
+      <span class="pro-toggle" onclick="togglePro('${c.id}')">▾</span>
+    </div>
+
+    <!-- Body: accordion sections -->
+    <div class="pro-body-v2" id="pb-${c.id}">
+
+      <!-- Top grid: tone + ci + stock -->
+      <div class="pro-top-grid">
+        <div class="pro-top-cell">
+          <div class="sec-lbl">Masstone · Midtone · Basetone</div>
+          ${toneStrip(c)}
+        </div>
+        <div class="pro-top-cell">
+          <div class="sec-lbl">CI Ingredients</div>
+          ${ciList(c)}
+        </div>
+        <div class="pro-top-cell">
+          <div class="sec-lbl">기본 정보</div>
+          <div class="field"><span class="field-lbl">Brand</span><span class="field-val">${c.brand}${c.collection?' · '+c.collection:''}</span></div>
+          <div class="field"><span class="field-lbl">Category</span><span class="field-val">${c.category} · ${c.subtype}</span></div>
+          <div class="field"><span class="field-lbl">Family</span><span class="field-val">${c.family||'—'}</span></div>
+          <div class="field"><span class="field-lbl">Tone</span><span class="field-val">${c.tone||'—'}</span></div>
+        </div>
+      </div>
+
+      <!-- Full original data accordion -->
+      ${c.proData ? buildAccordion('pro-raw-'+c.id, '원문 전체 데이터 (Full Data)', `<div class="raw-text">${escapeHTML(c.proData)}</div>`) : ''}
+
+    </div>
+  </div>`;
+}
+
+function escapeHTML(str){
+  return str
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+function buildAccordion(id, title, bodyHTML){
+  return `<div class="acc-section">
+    <div class="acc-header" onclick="toggleAcc('${id}')">
+      <span class="acc-title">${title}</span>
+      <span class="acc-arrow" id="arr-${id}">▾</span>
+    </div>
+    <div class="acc-body" id="acc-${id}">${bodyHTML}</div>
+  </div>`;
+}
+
+function toggleAcc(id){
+  const body = document.getElementById('acc-'+id);
+  const arr  = document.getElementById('arr-'+id);
+  if(!body) return;
+  const open = body.classList.toggle('open');
+  arr.classList.toggle('open', open);
+}
+
+function togglePro(id){
+  const body  = document.getElementById(`pb-${id}`);
+  const arrow = document.querySelector(`#pc-${id} .pro-toggle`);
+  if(!body) return;
+  const collapsed = body.classList.toggle('collapsed');
+  arrow.textContent = collapsed ? '▸' : '▾';
+}
+
+function emptyHTML(){ return `<div class="empty"><div class="empty-icon">◎</div>검색 결과가 없습니다.</div>`; }
+
+function updateCount(n){
+  let el = document.getElementById('result-count');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'result-count';
+    el.className = 'result-info';
+    document.querySelector('main').prepend(el);
+  }
+  const total = PMU_COLORS.filter(c=>c.active).length;
+  const inCnt = PMU_COLORS.filter(c=>c.active && getStock(c.id)==='in').length;
+  el.innerHTML = `표시 <span>${n}</span>개 &nbsp;·&nbsp; 보유중 <span>${inCnt}</span>개 &nbsp;·&nbsp; 전체 ${total}개`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  CONTROLS
+// ════════════════════════════════════════════════════════════
+function setCat(cat,btn){
+  state.cat=cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+function setTab(tab,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  btn.classList.add('active');
+  render();
+}
+function onSearch(input){
+  state.search=input.value;
+  document.getElementById('search-clear').style.display=input.value?'block':'none';
+  render();
+}
+function clearSearch(){
+  state.search='';
+  document.getElementById('search').value='';
+  document.getElementById('search-clear').style.display='none';
+  render();
+}
+function toggleChip(btn){
+  const filter=btn.dataset.filter, val=btn.dataset.val;
+  const active=btn.classList.contains('active');
+  document.querySelectorAll(`.chip[data-filter="${filter}"]`).forEach(b=>b.classList.remove('active'));
+  if(!active){ btn.classList.add('active'); state[filter]=val; }
+  else { state[filter]=null; }
+  render();
+}
+function buildBrandChips(){
+  const brands=[...new Set(PMU_COLORS.filter(c=>c.active).map(c=>c.brand))].sort();
+  const wrap=document.getElementById('chips-brand');
+  brands.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className='chip'; btn.dataset.filter='brand'; btn.dataset.val=b;
+    btn.textContent=b.replace(' x Perma Blend','').replace('Perma Blend','PB');
+    btn.onclick=function(){
+      const active=this.classList.contains('active');
+      document.querySelectorAll('.chip[data-filter="brand"]').forEach(x=>x.classList.remove('active'));
+      if(!active){ this.classList.add('active'); state.brand=b; }
+      else { state.brand=null; }
+      render();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function render(){ buildSimple(); buildPro(); }
+
+buildBrandChips();
+render();
+</script>
+</body>
+</html>
